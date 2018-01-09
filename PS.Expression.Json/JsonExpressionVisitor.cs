@@ -3,7 +3,8 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PS.Expression.Extensions;
-using PS.Expression.Logic;
+using PS.Expression.Test1;
+using PS.Expression.Test1.Logic;
 
 namespace PS.Expression.Json
 {

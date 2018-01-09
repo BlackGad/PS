@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace PS.Expression
+namespace PS.Expression.Test1
 {
     public class FluentObjectSchema<TObject>
     {

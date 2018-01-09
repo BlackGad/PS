@@ -1,4 +1,4 @@
-﻿namespace PS.Expression.Logic
+﻿namespace PS.Expression.Test1.Logic
 {
     public interface IInvertedLogicalExpression
     {

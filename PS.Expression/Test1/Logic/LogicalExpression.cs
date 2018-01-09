@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PS.Expression.Logic
+namespace PS.Expression.Test1.Logic
 {
     public class LogicalExpression : ILogicalExpression
     {

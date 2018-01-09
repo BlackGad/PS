@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using PS.Expression.Logic;
+using PS.Expression.Test1.Logic;
 
 namespace PS.Expression.Extensions
 {
