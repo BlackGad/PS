@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Expression.Json", "PS.Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Expression.Json.Tests", "PS.Expression.Json.Tests\PS.Expression.Json.Tests.csproj", "{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Expression.Tests", "PS.Expression.Tests\PS.Expression.Tests.csproj", "{EF9A9343-CAC3-49B0-ABB4-2E2485432316}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF9A9343-CAC3-49B0-ABB4-2E2485432316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF9A9343-CAC3-49B0-ABB4-2E2485432316}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF9A9343-CAC3-49B0-ABB4-2E2485432316}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF9A9343-CAC3-49B0-ABB4-2E2485432316}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +66,6 @@ Global
 		{2B3DB529-CF2C-4397-B5CD-2FF71587F74F} = {556922C8-3480-4015-8871-E979574C7E15}
 		{F318C692-2842-4D33-95D2-13356F588B34} = {556922C8-3480-4015-8871-E979574C7E15}
 		{80A13B3A-318F-477C-AF2A-EDAAB4C436C5} = {A96EC833-B52C-4948-A5D9-2018904A83AD}
+		{EF9A9343-CAC3-49B0-ABB4-2E2485432316} = {A96EC833-B52C-4948-A5D9-2018904A83AD}
 	EndGlobalSection
 EndGlobal
