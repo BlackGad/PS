@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model;
 
 namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests
 {

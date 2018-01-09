@@ -3,8 +3,8 @@ using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using PS.Expression.Test2;
-using PS.Expression.Test2.Fluent;
 using PS.Expression.Tests.TestReferences.ExpressionBuilderTests;
+using PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model;
 
 namespace PS.Expression.Tests.Tests
 {
@@ -39,9 +39,9 @@ namespace PS.Expression.Tests.Tests
                   .Path(src => src.Type)
                   .Path(src => src.Name);
 
-            var builder = new ExpressionBuilder<License>(scheme);
+            var builder = new TestVisitor();
             var licenses = ModelBuilder.CreateModel();
-            var queryLicenses = licenses.Where(builder.Build()).ToList();
+            var queryLicenses = licenses.Where(builder.Visit(scheme)).ToList();
         }
     }
 }

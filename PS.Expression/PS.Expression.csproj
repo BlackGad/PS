@@ -61,7 +61,7 @@
     <Compile Include="Test2\ExpressionScheme.cs" />
     <Compile Include="Test2\ExpressionSchemeOperators.cs" />
     <Compile Include="Test2\ExpressionSchemeProperties.cs" />
-    <Compile Include="Test2\Fluent\ExpressionBuilder.cs" />
+    <Compile Include="Test2\ExpressionVisitor.cs" />
     <Compile Include="Test2\Fluent\ExpressionOperatorBuilder.cs" />
     <Compile Include="Test2\Fluent\ExpressionOperatorReferencesBuilder.cs" />
   </ItemGroup>

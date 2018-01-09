@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests
+namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model
 {
     class License
     {

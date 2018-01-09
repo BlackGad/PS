@@ -44,10 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestReferences\ExpressionBuilderTests\Claim.cs" />
-    <Compile Include="TestReferences\ExpressionBuilderTests\License.cs" />
+    <Compile Include="TestReferences\ExpressionBuilderTests\Model\Claim.cs" />
+    <Compile Include="TestReferences\ExpressionBuilderTests\Model\License.cs" />
     <Compile Include="TestReferences\ExpressionBuilderTests\ModelBuilder.cs" />
-    <Compile Include="TestReferences\ExpressionBuilderTests\Template.cs" />
+    <Compile Include="TestReferences\ExpressionBuilderTests\Model\Template.cs" />
+    <Compile Include="TestReferences\ExpressionBuilderTests\TestVisitor.cs" />
     <Compile Include="Tests\ExpressionBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
