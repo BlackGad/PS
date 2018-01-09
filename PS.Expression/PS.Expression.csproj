@@ -65,7 +65,12 @@
     <Compile Include="Test2\Fluent\ExpressionOperatorBuilder.cs" />
     <Compile Include="Test2\Fluent\ExpressionOperatorReferencesBuilder.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\PS.Core\PS.Core.csproj">
+      <Project>{D26839EC-992D-4BA3-95A0-354CFABB6E74}</Project>
+      <Name>PS.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

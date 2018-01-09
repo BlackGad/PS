@@ -87,7 +87,6 @@ namespace PS.Expression.Json
 
         private static object ParseJValue(string key, JValue jObject, bool inverted)
         {
-            //var value = Schema.VisitValue(jObject.ToString(Formatting.None));
             return new InterExpression(key, new ValueExpression(jObject.ToString(Formatting.None)));
         }
 

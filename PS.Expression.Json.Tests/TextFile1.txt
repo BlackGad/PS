@@ -1,0 +1,30 @@
+﻿[
+	{ 
+        "and": 
+        [
+            { "id": { "equal": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }},
+            { "template": { "name": { "not" : {"equal": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }}}},
+            {
+                "claims": 
+                {
+                    "any": 
+                    [
+                        { "type": { "equal": "claim type" } },
+                        { "value": { "equal": "claim value" } }
+                    ]
+                }
+            },
+            { 
+                "claims": 
+                { 
+                    "where" : 
+                    [
+                        { "type": { "equal": "claim type" } },
+                        { "value": { "equal": "claim value" } }
+                    ],
+                    "count": { "equal": "3" }
+                } 
+            }
+        ]
+    }
+]
