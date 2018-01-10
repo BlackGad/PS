@@ -219,7 +219,7 @@
             &lt;And&gt;&#xD;
               &lt;Override /&gt;&#xD;
               &lt;Kind Is="Method" /&gt;&#xD;
-              &lt;Name Is="Equals" /&gt;&#xD;
+              &lt;Name Is="equal" /&gt;&#xD;
             &lt;/And&gt;&#xD;
           &lt;/Or&gt;&#xD;
         &lt;/Entry.Match&gt;&#xD;
@@ -492,7 +492,7 @@
                        &lt;And&gt;&#xD;
                           &lt;Override/&gt;&#xD;
                           &lt;Kind Is="method"/&gt;&#xD;
-                          &lt;Name Is="Equals"/&gt;&#xD;
+                          &lt;Name Is="equal"/&gt;&#xD;
 	    &lt;/And&gt;&#xD;
 	&lt;/Or&gt;&#xD;
             &lt;/Match&gt;&#xD;
@@ -572,7 +572,7 @@
 	<s:Boolean x:Key="/Default/CodeStyle/Generate/=EqualityComparer/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/Generate/=EqualityComparer/Options/=WrapInRegion/@EntryIndexedValue">False</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/Generate/=EqualityMembers/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/CodeStyle/Generate/=EqualityMembers/Options/=ChangeEquals/@EntryIndexedValue">Replace</s:String>
+	<s:String x:Key="/Default/CodeStyle/Generate/=EqualityMembers/Options/=Changeequal/@EntryIndexedValue">Replace</s:String>
 	<s:String x:Key="/Default/CodeStyle/Generate/=EqualityMembers/Options/=ChangeGetHashCode/@EntryIndexedValue">Replace</s:String>
 	<s:String x:Key="/Default/CodeStyle/Generate/=EqualityMembers/Options/=EqualityOperators/@EntryIndexedValue">True</s:String>
 	<s:String x:Key="/Default/CodeStyle/Generate/=EqualityMembers/Options/=ImplementIEquatable/@EntryIndexedValue">False</s:String>

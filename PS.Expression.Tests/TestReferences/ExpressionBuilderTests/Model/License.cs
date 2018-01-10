@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model
 {
-    class License
+    public class License
     {
         #region Properties
 

@@ -56,6 +56,10 @@
       <Project>{f318c692-2842-4d33-95d2-13356f588b34}</Project>
       <Name>PS.Expression.Json</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PS.Expression.Tests\PS.Expression.Tests.csproj">
+      <Project>{ef9a9343-cac3-49b0-abb4-2e2485432316}</Project>
+      <Name>PS.Expression.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PS.Expression\PS.Expression.csproj">
       <Project>{2b3db529-cf2c-4397-b5cd-2ff71587f74f}</Project>
       <Name>PS.Expression</Name>
@@ -65,7 +69,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TextFile1.txt" />
+    <Content Include="TextFile1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,7 +2,7 @@
 
 namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model
 {
-    class Template
+    public class Template
     {
         #region Properties
 

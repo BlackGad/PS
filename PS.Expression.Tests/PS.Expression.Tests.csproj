@@ -57,6 +57,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\PS.Core\PS.Core.csproj">
+      <Project>{D26839EC-992D-4BA3-95A0-354CFABB6E74}</Project>
+      <Name>PS.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PS.Expression\PS.Expression.csproj">
       <Project>{2b3db529-cf2c-4397-b5cd-2ff71587f74f}</Project>
       <Name>PS.Expression</Name>

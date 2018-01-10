@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DisposableDelegate.cs" />
     <Compile Include="Extensions\PathExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Linq\Expressions\Extensions\ExpressionExtensions.cs" />

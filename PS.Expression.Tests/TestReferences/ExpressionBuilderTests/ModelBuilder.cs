@@ -21,7 +21,7 @@ namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests
                     {
                         new Claim
                         {
-                            Id = Guid.NewGuid(),
+                            Id = new Guid("373474BF-8242-4BE8-88FA-53FFDC3BA20D"),
                             Type = "claim_type_1",
                             Name = "Claim Type 1 Value 1"
                         },

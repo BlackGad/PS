@@ -2,7 +2,7 @@
 
 namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model
 {
-    class Claim
+    public class Claim
     {
         #region Properties
 

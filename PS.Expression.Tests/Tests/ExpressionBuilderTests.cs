@@ -5,6 +5,7 @@ using NUnit.Framework;
 using PS.Expression.Test2;
 using PS.Expression.Tests.TestReferences.ExpressionBuilderTests;
 using PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model;
+using PS.Navigation;
 
 namespace PS.Expression.Tests.Tests
 {
@@ -39,7 +40,7 @@ namespace PS.Expression.Tests.Tests
                   .Path(src => src.Type)
                   .Path(src => src.Name);
 
-            var builder = new TestVisitor();
+            var builder = new TestVisitor(Route.Create("id", "equals", "373474BF-8242-4BE8-88FA-53FFDC3BA20D"));
             var licenses = ModelBuilder.CreateModel();
             var queryLicenses = licenses.Where(builder.Visit(scheme)).ToList();
         }
