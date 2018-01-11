@@ -27,18 +27,18 @@ namespace PS.Expression.Tests.Tests
                   .Construct<string>("isUpper").Key("custom").Register( /*factory*/);
 
             scheme.Map
-                  .Path(src => src.Id)
-                  .Path(src => src.Template.Id)
-                  .Path(src => src.Template.Name,
-                        opt => opt.Operators
-                                  .Reset()
-                                  .Include("custom"))
-                  .Path(src => src.Template.Description);
+                  .Route(src => src.Id)
+                  .Route(src => src.Template.Id)
+                  .Route(src => src.Template.Name,
+                         opt => opt.Operators
+                                   .Reset()
+                                   .Include("custom"))
+                  .Route(src => src.Template.Description);
 
-            scheme.Map.Subset(src => src.Claims)
-                  .Path(src => src.Id)
-                  .Path(src => src.Type)
-                  .Path(src => src.Name);
+            scheme.Map.SubRoute(src => src.Claims)
+                  .Route(src => src.Id)
+                  .Route(src => src.Type)
+                  .Route(src => src.Name);
 
             var builder = new TestVisitor(Route.Create("id", "equals", "373474BF-8242-4BE8-88FA-53FFDC3BA20D"));
             var licenses = ModelBuilder.CreateModel();

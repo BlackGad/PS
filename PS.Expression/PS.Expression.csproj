@@ -61,11 +61,11 @@
     <Compile Include="Test2\ExpressionSchemePropertyOptions.cs" />
     <Compile Include="Test2\ExpressionScheme.cs" />
     <Compile Include="Test2\ExpressionSchemeOperators.cs" />
-    <Compile Include="Test2\ExpressionSchemeProperties.cs" />
+    <Compile Include="Test2\ExpressionSchemeRoute.cs" />
+    <Compile Include="Test2\ExpressionSchemeRoutes.cs" />
     <Compile Include="Test2\ExpressionVisitor.cs" />
     <Compile Include="Test2\Fluent\ExpressionOperatorBuilder.cs" />
     <Compile Include="Test2\Fluent\ExpressionOperatorReferencesBuilder.cs" />
-    <Compile Include="TokenSequence.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PS.Core\PS.Core.csproj">

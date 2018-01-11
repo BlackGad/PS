@@ -1,15 +1,13 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PS.Data;
-using PS.Expression.Json.Extensions;
 using PS.Expression.Test2;
 using PS.Navigation;
 
 namespace PS.Expression.Json
 {
     /// <summary>
-    /// https://jack-vanlightly.com/blog/2016/2/11/implementing-a-dsl-parser
+    ///     https://jack-vanlightly.com/blog/2016/2/11/implementing-a-dsl-parser
     /// </summary>
     /// <remarks>
     ///     Grammar:
@@ -40,165 +38,77 @@ namespace PS.Expression.Json
 
         #region Members
 
-        /// <summary>
-        /// </summary>
-        /// <param name="json"></param>
-        /// <remarks>
-        ///     Grammar Rule:
-        ///     S -> EXPRESSION_CONDITION
-        /// </remarks>
-        /// <returns></returns>
         public JsonToken[] Parse(string json)
         {
             var tokenizer = new JsonTokenizer();
             var tokens = tokenizer.Tokenize((JToken)JsonConvert.DeserializeObject(json));
-            var sequence = new TokenSequence<JsonToken>(tokens);
 
-            EXPRESSION_CONDITION(new ParseContext(sequence));
+            var ctx = new ParseContext(tokens);
+            ctx.Environment.Add(nameof(ExpressionSchemeRoute.Route), Route.Create());
+
+            ctx.CheckSequence("EXPRESSION_CONDITION")
+               .Assert(EXPRESSION_CONDITION)
+               .Assert((t, env) => t.Type == TokenType.EOS);
 
             return tokens;
         }
 
-        /// <summary>
-        /// </summary>
-        /// <remarks>
-        ///     Grammar Rule:
-        ///     EXPRESSION -> object(property) EXPRESSION
-        ///     EXPRESSION -> object(not) object(operator) value
-        ///     EXPRESSION -> object(operator) value
-        /// </remarks>
-        /// <returns></returns>
         private void EXPRESSION(ParseContext ctx)
         {
-            ctx.Sequence.CheckAheadToken(TokenType.Object);
-            var token = ctx.Sequence.Lookahead();
+            ctx.CheckSequence("object(property) EXPRESSION")
+               .Assert((t, env) =>
+               {
+                   if (t.Type != TokenType.Object) return false;
 
-            //property found
-            if (true)
-            {
-                using (ctx.RouteProperty(token.Value))
-                {
-                    ctx.Sequence.Next();
-                    EXPRESSION(ctx);
-                    return;
-                }
-            }
+                   var parentProperty = (Route)ctx.Environment[nameof(ExpressionSchemeRoute.Route)];
+                   var currentRoutePart = Route.Create(parentProperty, t.Value);
+                   var isValidProperty = _scheme.Map.IsValidRoute(currentRoutePart);
+                   if (isValidProperty) ctx.Environment[nameof(ExpressionSchemeRoute.Route)] = currentRoutePart;
 
-            if (string.Equals(token.Value, "not", StringComparison.InvariantCultureIgnoreCase))
-            {
-                //not operator detected
-                ctx.Sequence.Next();
-                token = ctx.Sequence.Lookahead();
-            }
+                   return isValidProperty;
+               })
+               .Assert(EXPRESSION);
 
-            ctx.Sequence.CheckAheadToken(TokenType.Object);
+            ctx.CheckSequence("object(not) object(operator) value")
+               .Assert((t, env) => t.Type == TokenType.Object && string.Equals(t.Value, "not", StringComparison.InvariantCultureIgnoreCase))
+               .Assert((t, env) => t.Type == TokenType.Object && string.Equals(t.Value, "equal", StringComparison.InvariantCultureIgnoreCase))
+               .Assert((t, env) => t.Type == TokenType.Value);
 
-            //Operator not found
-            if (false)
-            {
-                throw new ParserException($"Operator {token.Value} not supported");
-            }
-
-            ctx.Sequence.CheckAheadToken(TokenType.Value);
-            //value detected
-            ctx.Sequence.Next();
+            ctx.CheckSequence("object(operator) value")
+               .Assert((t, env) => t.Type == TokenType.Object && string.Equals(t.Value, "equal", StringComparison.InvariantCultureIgnoreCase))
+               .Assert((t, env) => t.Type == TokenType.Value);
         }
 
         private void EXPRESSION_CONDITION(ParseContext ctx)
         {
-            ctx.Sequence.CheckAheadToken(TokenType.Any);
+            ctx.CheckSequence("object(and) EXPRESSION_CONDITION_BODY")
+               .Assert((t, env) => t.Type == TokenType.Object && string.Equals(t.Value, "and", StringComparison.InvariantCultureIgnoreCase))
+               .Assert(EXPRESSION_CONDITION_BODY);
 
-            var token = ctx.Sequence.Lookahead();
-            if (token.Type == TokenType.Object && string.Equals(token.Value, "and", StringComparison.InvariantCultureIgnoreCase))
-            {
-                ctx.Sequence.Next();
-                EXPRESSION_CONDITION_BODY(ctx);
-            }
-            else if (token.Type == TokenType.Object && string.Equals(token.Value, "or", StringComparison.InvariantCultureIgnoreCase))
-            {
-                ctx.Sequence.Next();
-                EXPRESSION_CONDITION_BODY(ctx);
-            }
-            else
-            {
-                EXPRESSION_CONDITION_BODY(ctx);
-            }
+            ctx.CheckSequence("object(or) EXPRESSION_CONDITION_BODY")
+               .Assert((t, env) => t.Type == TokenType.Object && string.Equals(t.Value, "or", StringComparison.InvariantCultureIgnoreCase))
+               .Assert(EXPRESSION_CONDITION_BODY);
 
-            ctx.Sequence.CheckAheadToken(TokenType.EOS);
+            ctx.CheckSequence("EXPRESSION_CONDITION_BODY")
+               .Assert(EXPRESSION_CONDITION_BODY);
         }
 
-        /// <summary>
-        /// </summary>
-        /// <remarks>
-        ///     Grammar Rule:
-        ///     EXPRESSION_CONDITION_BODY -> ArrayStart EXPRESSION_LIST ArrayEnd
-        /// </remarks>
-        /// <returns></returns>
         private void EXPRESSION_CONDITION_BODY(ParseContext ctx)
         {
-            ctx.Sequence.CheckAheadToken(TokenType.Any);
-
-            var token = ctx.Sequence.Lookahead();
-            if (token.Type == TokenType.ArrayStart)
-            {
-                ctx.Sequence.Next();
-                EXPRESSION_LIST(ctx);
-                ctx.Sequence.CheckAheadToken(TokenType.ArrayEnd);
-                ctx.Sequence.Next();
-            }
-            else token.ThrowUnexpectedToken();
+            ctx.CheckSequence("ArrayStart EXPRESSION_LIST ArrayEnd")
+               .Assert((t, env) => t.Type == TokenType.ArrayStart)
+               .Assert(EXPRESSION_LIST)
+               .Assert((t, env) => t.Type == TokenType.ArrayEnd);
         }
 
-        /// <summary>
-        /// </summary>
-        /// <remarks>
-        ///     Grammar Rules:
-        ///     EXPRESSION_LIST -> EXPRESSION EXPRESSION_LIST
-        ///     EXPRESSION_LIST -> EXPRESSION
-        /// </remarks>
-        /// <returns></returns>
         private void EXPRESSION_LIST(ParseContext ctx)
         {
-            ctx.Sequence.CheckAheadToken(TokenType.Any);
-            if (ctx.Sequence.Lookahead().Type == TokenType.ArrayEnd) return;
+            ctx.CheckSequence("EXPRESSION EXPRESSION_LIST")
+               .Assert(EXPRESSION)
+               .Assert(EXPRESSION_LIST);
 
-            EXPRESSION(ctx);
-        }
-
-        #endregion
-
-        #region Nested type: ParseContext
-
-        class ParseContext
-        {
-            private Route _currentPropertyRoute;
-
-            #region Constructors
-
-            public ParseContext(TokenSequence<JsonToken> sequence)
-            {
-                Sequence = sequence;
-                _currentPropertyRoute = Route.Create();
-            }
-
-            #endregion
-
-            #region Properties
-
-            public TokenSequence<JsonToken> Sequence { get; }
-
-            #endregion
-
-            #region Members
-
-            public IDisposable RouteProperty(string name)
-            {
-                var previous = _currentPropertyRoute;
-                _currentPropertyRoute = Route.Create(_currentPropertyRoute, name);
-                return new DisposableDelegate(() => _currentPropertyRoute = previous);
-            }
-
-            #endregion
+            ctx.CheckSequence("EXPRESSION")
+               .Assert(EXPRESSION);
         }
 
         #endregion
