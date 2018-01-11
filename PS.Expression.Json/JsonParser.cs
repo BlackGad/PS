@@ -46,10 +46,10 @@ namespace PS.Expression.Json
             var ctx = new ParseContext(tokens);
             ctx.Environment.Add(nameof(ExpressionSchemeRoute.Route), Route.Create());
 
-            ctx.CheckSequence("EXPRESSION_CONDITION")
+            ctx.CheckSequence("EXPRESSION_CONDITION eos")
                .Assert(EXPRESSION_CONDITION)
                .Assert((t, env) => t.Type == TokenType.EOS);
-
+            var dot = ctx.ToString("d");
             return tokens;
         }
 
