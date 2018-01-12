@@ -58,7 +58,7 @@
     <Compile Include="Test1\Logic\ValueExpression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test2\ExpressionOperator.cs" />
-    <Compile Include="Test2\ExpressionSchemePropertyOptions.cs" />
+    <Compile Include="Test2\ExpressionSchemeRouteOptions.cs" />
     <Compile Include="Test2\ExpressionScheme.cs" />
     <Compile Include="Test2\ExpressionSchemeOperators.cs" />
     <Compile Include="Test2\ExpressionSchemeRoute.cs" />

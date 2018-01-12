@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PS.Navigation;
 
 namespace PS.Expression.Test2
@@ -28,6 +29,18 @@ namespace PS.Expression.Test2
         public ExpressionContext CreateReaderContext()
         {
             return new ExpressionContext(Route.Create());
+        }
+
+        public bool IsValidOperator(Route routePath, string name)
+        {
+            var route = Map.GetRoute(routePath);
+            if (route == null) return false;
+
+            var availableOperators = Operators.GetOperatorsForType(route.Type);
+            availableOperators = availableOperators.Where(o => route.Options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
+            if (!route.Options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
+
+            return availableOperators.Any(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         #endregion

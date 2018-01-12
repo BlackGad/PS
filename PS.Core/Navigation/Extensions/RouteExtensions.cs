@@ -29,6 +29,17 @@ namespace PS.Navigation.Extensions
                                  route.Sequences[modeIndex].RegexPattern + "$");
         }
 
+        public static bool AreEqual(this Route source, Route route, RouteCaseMode caseSensitive = RouteCaseMode.Sensitive)
+        {
+            if (source.IsEmpty() || route.IsEmpty()) return false;
+
+            var modeIndex = (int)caseSensitive;
+            if (modeIndex > 1) return false;
+
+            return Regex.IsMatch(source.Sequences[modeIndex].RegexInput,
+                                 "^" + route.Sequences[modeIndex].RegexPattern + "$");
+        }
+
         public static bool IsEmpty(this Route source)
         {
             return (source?.Count ?? 0) == 0;

@@ -1,4 +1,70 @@
-S -> EXPRESSION_CONDITION
+S -> EXPRESSION_CONDITION eos
+EXPRESSION_CONDITION -> and EXPRESSION_CONDITION_BODY
+EXPRESSION_CONDITION -> or EXPRESSION_CONDITION_BODY
+EXPRESSION_CONDITION -> EXPRESSION_CONDITION_BODY
+EXPRESSION_CONDITION_BODY -> ArrayStart EXPRESSION_LIST ArrayEnd
+
+EXPRESSION_LIST -> EXPRESSION EXPRESSION_LIST
+EXPRESSION_LIST -> EMPTY
+
+EXPRESSION -> ROUTE ROUTE_LIST OPERATION
+
+ROUTE_LIST -> ROUTE ROUTE_LIST
+ROUTE_LIST -> EMPTY
+
+ROUTE -> object(route)
+
+EXPRESSION -> SIMPLE_ROUTE_LIST COMPLEX_ROUTE
+
+ROUTE_LIST -> SIMPLE_ROUTE SIMPLE_ROUTE_LIST
+ROUTE_LIST -> EMPTY
+
+ROUTE -> object(route)
+
+COMPLEX_ROUTE -> COMPLEX_ROUTE_SIMPLIFIED
+COMPLEX_ROUTE -> COMPLEX_ROUTE_SIMPLIFIED OPERATION
+
+COMPLEX_ROUTE_SIMPLIFIED -> object(complexRoute) operator EXPRESSION_CONDITION
+
+OPERATION -> not operator value
+OPERATION -> operator value
+
+
+
+
+
+{ 
+    "and" : 
+    [	
+        { "id": { "equal": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }},
+        { "template": { "name": { "not" : {"match": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }}}},
+        { 
+            "claims":
+            { 
+                "count" : 
+                { 
+                    "or" :
+                    [
+                        { "type": { "equal": "claim type" } },
+                        { "value": { "equal": "claim value" } }
+                    ]
+                },
+                "equal": "3"
+            } 
+        }
+    ]
+}
+
+
+
+
+
+
+
+
+
+
+S -> EXPRESSION_CONDITION eos
 EXPRESSION_CONDITION -> object(and) EXPRESSION_CONDITION_BODY
 EXPRESSION_CONDITION -> object(or) EXPRESSION_CONDITION_BODY
 EXPRESSION_CONDITION -> EXPRESSION_CONDITION_BODY

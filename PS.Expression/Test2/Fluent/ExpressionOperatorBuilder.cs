@@ -5,8 +5,8 @@ namespace PS.Expression.Test2.Fluent
     public class ExpressionOperatorBuilder
     {
         private readonly Type _appliedTo;
-        private readonly Type _producedResult;
         private readonly ExpressionSchemeOperators _expressionSchemeOperators;
+        private readonly Type _producedResult;
         private readonly string _token;
         private string _key;
 
@@ -42,7 +42,7 @@ namespace PS.Expression.Test2.Fluent
             {
                 Token = _token,
                 AppliedTo = _appliedTo,
-                //Factory = 
+                ProducedResult = _producedResult,
                 Key = _key
             });
             return _expressionSchemeOperators;

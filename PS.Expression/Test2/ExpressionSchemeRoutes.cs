@@ -29,6 +29,11 @@ namespace PS.Expression.Test2
 
         #region Members
 
+        public ExpressionSchemeRoute GetRoute(Route route)
+        {
+            return Routes.Where(p => p.Key.AreEqual(route, RouteCaseMode.Insensitive)).Select(p => p.Value).FirstOrDefault();
+        }
+
         public bool IsValidRoute(Route route)
         {
             return Routes.Keys.Any(r => r.StartWith(route, RouteCaseMode.Insensitive));
@@ -42,24 +47,21 @@ namespace PS.Expression.Test2
         #region Members
 
         public ExpressionSchemeRoutes<TClass> Route<TResult>(Expression<Func<TClass, TResult>> instruction,
-                                                             Action<ExpressionSchemePropertyOptions> options = null)
+                                                             Action<ExpressionSchemeRouteOptions> options = null)
         {
             var expressionBody = instruction?.Body as MemberExpression;
             var route = ExtractRoute(expressionBody);
             if (Routes.ContainsKey(route)) throw new ArgumentException($"{route} route already declared");
 
-            Routes.Add(route,
-                       new ExpressionSchemeRoute
-                       {
-                           Type = typeof(TResult),
-                           Route = route
-                       });
+            var optionInstance = new ExpressionSchemeRouteOptions();
+            options?.Invoke(optionInstance);
+            Routes.Add(route, new ExpressionSchemeRoute(route, typeof(TResult), optionInstance));
 
             return this;
         }
 
         public ExpressionSchemeRoutes<TResult> SubRoute<TResult>(Expression<Func<TClass, IEnumerable<TResult>>> instruction,
-                                                                 Action<ExpressionSchemePropertyOptions> options = null)
+                                                                 Action<ExpressionSchemeRouteOptions> options = null)
         {
             var expressionBody = instruction?.Body as MemberExpression;
             var route = ExtractRoute(expressionBody);

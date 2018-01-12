@@ -1,6 +1,6 @@
 ﻿namespace PS.Expression.Json
 {
-    public class TokenAssertResult : AssertResult
+    public class AssertResultToken : AssertResult
     {
         #region Properties
 

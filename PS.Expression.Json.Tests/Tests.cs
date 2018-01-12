@@ -23,7 +23,7 @@ namespace PS.Expression.Json.Tests
                   .Construct<string>("endWith").Register( /*factory*/)
                   .Construct<string>("contains").Register( /*factory*/)
                   .Construct<IEnumerable>("any").Register( /*factory*/)
-                  .Construct<string>("isUpper").Key("custom").Register( /*factory*/);
+                  .Construct<string>("match").Key("custom").Register( /*factory*/);
 
             scheme.Map
                   .Route(src => src.Id)

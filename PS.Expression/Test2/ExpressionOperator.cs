@@ -11,6 +11,7 @@ namespace PS.Expression.Test2
 
         public string Token { get; set; }
         public string Key { get; set; }
+        public Type ProducedResult { get; set; }
 
         #endregion
     }

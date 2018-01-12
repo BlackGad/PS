@@ -6,20 +6,22 @@ namespace PS.Expression.Json
 {
     public class ParseBranch
     {
-        private readonly ParseContext _context;
-        private int _assertsLength;
+        private readonly Dictionary<object, object> _environment;
 
         #region Constructors
 
-        public ParseBranch(ParseContext context, string ruleName, string assertName)
+        public ParseBranch(ParseContext context, Dictionary<object, object> environment, string ruleName, string assertName)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
-            _context = context;
+            Context = context;
             RuleName = ruleName;
             AssertName = assertName;
-
             Asserts = new List<AssertResult>();
-            _assertsLength = 0;
+            _environment = new Dictionary<object, object>();
+            foreach (var pair in environment)
+            {
+                _environment.Add(pair.Key, pair.Value);
+            }
         }
 
         #endregion
@@ -29,6 +31,8 @@ namespace PS.Expression.Json
         public string AssertName { get; }
 
         public List<AssertResult> Asserts { get; }
+
+        public ParseContext Context { get; }
 
         public Exception Error
         {
@@ -56,14 +60,14 @@ namespace PS.Expression.Json
 
         #region Members
 
-        public virtual ParseBranch Assert(Func<JsonToken, Dictionary<object, object>, bool> factory)
+        public ParseBranch Assert(Func<JsonToken, Dictionary<object, object>, bool> factory)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
 
-            var aheadToken = _context.GetToken(currentOffset);
+            var aheadToken = Context.GetToken(currentOffset);
 
-            var assert = new TokenAssertResult
+            var assert = new AssertResultToken
             {
                 Index = Asserts.Count,
                 Token = aheadToken,
@@ -77,7 +81,7 @@ namespace PS.Expression.Json
                 if (aheadToken == null) assert.Error = new ParserException("Unexpected end of sequence.", RuleName);
                 else
                 {
-                    if (!factory(aheadToken, _context.Environment))
+                    if (!factory(aheadToken, _environment))
                     {
                         assert.Error = new ParserException($"Unexpected token {aheadToken}.", RuleName);
                     }
@@ -88,16 +92,14 @@ namespace PS.Expression.Json
                 assert.Error = new ParserException(null, RuleName, e);
             }
 
-            _assertsLength += assert.Length;
-
             return this;
         }
 
-        public virtual ParseBranch Assert(Action<ParseContext> factory)
+        public ParseBranch Assert(Action<ParseContext> factory)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
-            var assert = new BranchAssertResult
+            var assert = new AssertResultBranch
             {
                 Index = Asserts.Count,
                 RuleName = RuleName
@@ -107,28 +109,31 @@ namespace PS.Expression.Json
 
             try
             {
-                var localContext = _context.Branch(currentOffset);
+                var localContext = Context.Branch(currentOffset, _environment);
                 factory(localContext);
+
                 var branch = localContext.SuccessBranch ?? localContext.FailedBranch;
                 if (branch != null) assert.Branch = branch;
-                else
-                {
-                    assert.Error = new ParserException("There is no sequence checks", RuleName);
-                }
+                else assert.Error = new ParserException("There is no sequence checks", RuleName);
             }
             catch (Exception e)
             {
                 assert.Error = new ParserException(null, RuleName, e);
             }
 
-            _assertsLength += assert.Length;
-
             return this;
+        }
+
+        public void AssertEmpty()
+        {
+            if (Asserts.Any(a => a.Error != null)) return;
+
+            Asserts.Add(new AssertResultEmpty());
         }
 
         public int GetAssertsLength()
         {
-            return _assertsLength;
+            return Asserts.Aggregate(0, (agg, a) => agg + a.Length);
         }
 
         #endregion

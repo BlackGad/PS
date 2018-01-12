@@ -26,19 +26,19 @@ namespace PS.Expression.Json
 
         #region Constructors
 
-        public ParseContext(IEnumerable<JsonToken> tokens) : this()
+        public ParseContext(IEnumerable<JsonToken> tokens) : this(new Dictionary<object, object>())
         {
             if (tokens == null) throw new ArgumentNullException(nameof(tokens));
             _tokens = new List<JsonToken>(tokens);
         }
 
-        private ParseContext()
+        private ParseContext(Dictionary<object, object> env)
         {
             _sequenceChecks = new List<ParseBranch>();
-            Environment = new Dictionary<object, object>();
+            Environment = env;
         }
 
-        private ParseContext(List<JsonToken> tokens, int offset) : this()
+        private ParseContext(List<JsonToken> tokens, Dictionary<object, object> env, int offset) : this(env)
         {
             _tokens = tokens;
             _offset = offset;
@@ -61,7 +61,12 @@ namespace PS.Expression.Json
 
         public ParseBranch SuccessBranch
         {
-            get { return _sequenceChecks.FirstOrDefault(c => c.Error == null); }
+            get
+            {
+                var successBranches = _sequenceChecks.Where(c => c.Error == null).ToList();
+                if (!successBranches.Any()) return null;
+                return successBranches.OrderByDescending(check => check.GetAssertsLength()).First();
+            }
         }
 
         #endregion
@@ -101,22 +106,14 @@ namespace PS.Expression.Json
 
         #region Members
 
-        public ParseContext Branch(int offset)
+        public ParseContext Branch(int offset, Dictionary<object, object> environment)
         {
-            var branch = new ParseContext(_tokens, _offset + offset);
-            foreach (var pair in Environment)
-            {
-                branch.Environment.Add(pair.Key, pair.Value);
-            }
-
-            return branch;
+            return new ParseContext(_tokens, environment, _offset + offset);
         }
 
         public ParseBranch CheckSequence(string assertName, [CallerMemberName] string ruleName = null)
         {
-            var result = _sequenceChecks.Any(s => s.Error == null)
-                ? new BlankParseBranch(this, ruleName, assertName)
-                : new ParseBranch(this, ruleName, assertName);
+            var result = new ParseBranch(this, Environment, ruleName, assertName);
             _sequenceChecks.Add(result);
             return result;
         }
@@ -140,7 +137,7 @@ namespace PS.Expression.Json
 
             foreach (var assert in branch.Asserts.Enumerate().Reverse())
             {
-                var branchAssertResult = assert as BranchAssertResult;
+                var branchAssertResult = assert as AssertResultBranch;
                 if (branchAssertResult != null)
                 {
                     builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [color=orange] " +
@@ -149,7 +146,7 @@ namespace PS.Expression.Json
                     builder.Append(GenerateDGraph(branchAssertResult.Branch, assert.Id));
                 }
 
-                var tokenAssertResult = assert as TokenAssertResult;
+                var tokenAssertResult = assert as AssertResultToken;
                 if (tokenAssertResult != null)
                 {
                     var color = "darkslategray1";
@@ -162,6 +159,13 @@ namespace PS.Expression.Json
                     builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [color={color}]" +
                                        $"[label=\"{tokenAssertResult.Token.ToString().Replace("\"", string.Empty)}\"]" +
                                        $"[tooltip=\"{tooltip}\"]");
+                    builder.AppendLine($"{GenerateDGraphVertexId(id)} -> {GenerateDGraphVertexId(assert.Id)}");
+                }
+
+                var tokenAssertEmpty = assert as AssertResultEmpty;
+                if (tokenAssertEmpty != null)
+                {
+                    builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [label=\"empty\"]");
                     builder.AppendLine($"{GenerateDGraphVertexId(id)} -> {GenerateDGraphVertexId(assert.Id)}");
                 }
             }

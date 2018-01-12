@@ -40,7 +40,19 @@ namespace PS.Expression.Json
             var properties = jObject.Properties().ToList();
             foreach (var property in properties)
             {
-                result.Add(new JsonToken(TokenType.Object, property.Name));
+                JsonToken jsonToken;
+
+                if (properties.Count > 1 || property.Value is JValue)
+                    jsonToken = new JsonToken(TokenType.Operator, property.Name);
+                else if (string.Equals(property.Name, "and", StringComparison.InvariantCultureIgnoreCase))
+                    jsonToken = new JsonToken(TokenType.And);
+                else if (string.Equals(property.Name, "or", StringComparison.InvariantCultureIgnoreCase))
+                    jsonToken = new JsonToken(TokenType.Or);
+                else if (string.Equals(property.Name, "not", StringComparison.InvariantCultureIgnoreCase))
+                    jsonToken = new JsonToken(TokenType.Not);
+                else jsonToken = new JsonToken(TokenType.Object, property.Name);
+
+                result.Add(jsonToken);
                 result.AddRange(TokenizeJToken(property.Value));
             }
             return result;

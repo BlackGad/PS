@@ -2,7 +2,7 @@
 
 namespace PS.Expression.Json
 {
-    public class BranchAssertResult : AssertResult
+    public class AssertResultBranch : AssertResult
     {
         #region Properties
 

@@ -45,8 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertResult.cs" />
-    <Compile Include="BlankParseBranch.cs" />
-    <Compile Include="BranchAssertResult.cs" />
+    <Compile Include="AssertResultEmpty.cs" />
+    <Compile Include="AssertResultBranch.cs" />
     <Compile Include="JsonExpressionVisitor.cs" />
     <Compile Include="JsonParser.cs" />
     <Compile Include="JsonTokenizer.cs" />
@@ -54,7 +54,7 @@
     <Compile Include="ParseBranch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParseContext.cs" />
-    <Compile Include="TokenAssertResult.cs" />
+    <Compile Include="AssertResultToken.cs" />
     <Compile Include="TokenType.cs" />
   </ItemGroup>
   <ItemGroup>
