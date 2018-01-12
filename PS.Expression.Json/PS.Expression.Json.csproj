@@ -52,6 +52,7 @@
     <Compile Include="JsonTokenizer.cs" />
     <Compile Include="JsonToken.cs" />
     <Compile Include="ParseBranch.cs" />
+    <Compile Include="ParseEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParseContext.cs" />
     <Compile Include="AssertResultToken.cs" />

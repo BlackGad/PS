@@ -2,6 +2,11 @@
 {
     public class AssertResultEmpty : AssertResult
     {
-        public override int Length { get { return 0; } }
+        #region Properties
+
+        
+        public override int Length => 0;
+
+        #endregion
     }
 }

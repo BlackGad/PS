@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PS.Expression.Test2;
@@ -49,73 +48,22 @@ namespace PS.Expression.Json
             var tokens = tokenizer.Tokenize((JToken)JsonConvert.DeserializeObject(json));
 
             var ctx = new ParseContext(tokens);
-            ctx.Environment.Add(nameof(ExpressionSchemeRoute.Route), Route.Create());
 
-            ctx.CheckSequence("EXPRESSION_CONDITION eos")
+            ctx.Sequence("EXPRESSION_CONDITION eos")
                .Assert(EXPRESSION_CONDITION)
                .Assert((t, env) => t.Type == TokenType.EOS);
+
             var dot = ctx.ToString("d");
             return tokens;
         }
 
-        private void EXPRESSION(ParseContext ctx)
-        {
-            ctx.CheckSequence("object(route) ROUTE_LIST OPERATION")
-               .Assert(IsValidRoute)
-               .Assert(ROUTE_LIST)
-               .Assert(OPERATION);
-
-            ctx.CheckSequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION")
-               .Assert(IsValidRoute)
-               .Assert(ROUTE_LIST)
-               .Assert(IsValidOperator)
-               .Assert(EXPRESSION_CONDITION);
-
-            ctx.CheckSequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION OPERATION")
-               .Assert(IsValidRoute)
-               .Assert(ROUTE_LIST)
-               .Assert(IsValidOperator)
-               .Assert(EXPRESSION_CONDITION)
-               .Assert(OPERATION);
-        }
-
-        private void EXPRESSION_CONDITION(ParseContext ctx)
-        {
-            ctx.CheckSequence("and EXPRESSION_CONDITION_BODY")
-               .Assert((t, env) => t.Type == TokenType.And)
-               .Assert(EXPRESSION_CONDITION_BODY);
-
-            ctx.CheckSequence("or EXPRESSION_CONDITION_BODY")
-               .Assert((t, env) => t.Type == TokenType.Or)
-               .Assert(EXPRESSION_CONDITION_BODY);
-
-            ctx.CheckSequence("EXPRESSION_CONDITION_BODY")
-               .Assert(EXPRESSION_CONDITION_BODY);
-        }
-
-        private void EXPRESSION_CONDITION_BODY(ParseContext ctx)
-        {
-            ctx.CheckSequence("ArrayStart EXPRESSION_LIST ArrayEnd")
-               .Assert((t, env) => t.Type == TokenType.ArrayStart)
-               .Assert(EXPRESSION_LIST)
-               .Assert((t, env) => t.Type == TokenType.ArrayEnd);
-        }
-
-        private void EXPRESSION_LIST(ParseContext ctx)
-        {
-            ctx.CheckSequence("EXPRESSION EXPRESSION_LIST")
-               .Assert(EXPRESSION)
-               .Assert(EXPRESSION_LIST);
-
-            ctx.CheckSequence("EMPTY")
-               .AssertEmpty();
-        }
-
-        private bool IsValidOperator(JsonToken t, Dictionary<object, object> env)
+        protected bool ProcessOperator(JsonToken t, ParseEnvironment env)
         {
             if (t.Type != TokenType.Operator) return false;
-            var contextProperty = (Route)env[nameof(ExpressionSchemeRoute.Route)];
-            //var isValidOperator = _scheme.IsValidOperator(contextProperty, t.Value);
+            var operatorSession = env[Keys.RouteSession] + "_operator";
+            env[operatorSession] = t.Value;
+
+            //var isValidOperator = _scheme.ProcessOperator(contextProperty, t.Value);
             //if (isValidOperator)
             //{
             //}
@@ -123,39 +71,111 @@ namespace PS.Expression.Json
             return true;
         }
 
-        private bool IsValidRoute(JsonToken t, Dictionary<object, object> env)
+        protected bool ProcessRoute(JsonToken t, ParseEnvironment env)
         {
             if (t.Type != TokenType.Object) return false;
-
-            var contextProperty = (Route)env[nameof(ExpressionSchemeRoute.Route)];
-            var currentRoutePart = Route.Create(contextProperty, t.Value);
-            //var isValidProperty = _scheme.Map.IsValidRoute(currentRoutePart);
-            //if (isValidProperty) 
-            env[nameof(ExpressionSchemeRoute.Route)] = currentRoutePart;
-            //return isValidProperty;
+            var routeSession = env[Keys.RouteSession] + "_route";
+            env[routeSession] = Route.Create(env[routeSession], t.Value);
             return true;
+        }
+
+        protected void ProcessRouteSession(ParseEnvironment env)
+        {
+            env[Keys.RouteSession] = Guid.NewGuid().ToString("N");
+        }
+
+        private void EXPRESSION(ParseContext ctx)
+        {
+            ctx.Sequence("object(route) ROUTE_LIST OPERATION")
+               .Assert(ProcessRoute)
+               .Assert(ROUTE_LIST)
+               .Assert(OPERATION);
+
+            ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION")
+               .Assert(ProcessRoute)
+               .Assert(ROUTE_LIST)
+               .Assert(ProcessOperator)
+               .Assert(EXPRESSION_CONDITION);
+
+            ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION OPERATION")
+               .Assert(ProcessRoute)
+               .Assert(ROUTE_LIST)
+               .Assert(ProcessOperator)
+               .Assert(EXPRESSION_CONDITION)
+               .Assert(OPERATION);
+        }
+
+        private void EXPRESSION_CONDITION(ParseContext ctx)
+        {
+            ctx.Sequence("and EXPRESSION_CONDITION_BODY")
+               .Assert((t, env) => t.Type == TokenType.And)
+               .Assert(EXPRESSION_CONDITION_BODY);
+
+            ctx.Sequence("or EXPRESSION_CONDITION_BODY")
+               .Assert((t, env) => t.Type == TokenType.Or)
+               .Assert(EXPRESSION_CONDITION_BODY);
+
+            ctx.Sequence("EXPRESSION_CONDITION_BODY")
+               .Assert(EXPRESSION_CONDITION_BODY);
+        }
+
+        private void EXPRESSION_CONDITION_BODY(ParseContext ctx)
+        {
+            ctx.Sequence("ArrayStart EXPRESSION_LIST ArrayEnd")
+               .Assert((t, env) => t.Type == TokenType.ArrayStart)
+               .Assert(EXPRESSION_LIST)
+               .Assert((t, env) => t.Type == TokenType.ArrayEnd);
+        }
+
+        private void EXPRESSION_LIST(ParseContext ctx)
+        {
+            var id = Guid.NewGuid();
+            ctx.Sequence("EXPRESSION EXPRESSION_LIST")
+               .Assert("(M)Route session", ProcessRouteSession)
+               .Assert(EXPRESSION)
+               .Assert(EXPRESSION_LIST);
+
+            ctx.Sequence("EMPTY")
+               .Assert();
         }
 
         private void OPERATION(ParseContext ctx)
         {
-            ctx.CheckSequence("not operator value")
+            ctx.Sequence("not operator value")
                .Assert((t, env) => t.Type == TokenType.Not)
-               .Assert(IsValidOperator)
+               .Assert(ProcessOperator)
                .Assert((t, env) => t.Type == TokenType.Value);
 
-            ctx.CheckSequence("operator value")
-               .Assert(IsValidOperator)
+            ctx.Sequence("operator value")
+               .Assert(ProcessOperator)
                .Assert((t, env) => t.Type == TokenType.Value);
         }
 
         private void ROUTE_LIST(ParseContext ctx)
         {
-            ctx.CheckSequence("object(route) ROUTE_LIST")
-               .Assert(IsValidRoute)
+            ctx.Sequence("object(route) ROUTE_LIST")
+               .Assert(ProcessRoute)
                .Assert(ROUTE_LIST);
 
-            ctx.CheckSequence("EMPTY")
-               .AssertEmpty();
+            ctx.Sequence("EMPTY")
+               .Assert();
+        }
+
+        #endregion
+
+        #region Nested type: Keys
+
+        class Keys
+        {
+            #region Constants
+
+            public const string Operator = nameof(Operator);
+            //public const string Route = nameof(Route);
+            public const string RouteSession = nameof(RouteSession);
+            public const string RouteSessionList = nameof(RouteSessionList);
+            public const string Value = nameof(Value);
+
+            #endregion
         }
 
         #endregion

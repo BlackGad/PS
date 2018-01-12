@@ -6,22 +6,18 @@ namespace PS.Expression.Json
 {
     public class ParseBranch
     {
-        private readonly Dictionary<object, object> _environment;
+        private ParseEnvironment _environment;
 
         #region Constructors
 
-        public ParseBranch(ParseContext context, Dictionary<object, object> environment, string ruleName, string assertName)
+        public ParseBranch(ParseContext context, ParseEnvironment environment, string branchName, string assertName)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             Context = context;
-            RuleName = ruleName;
+            BranchName = branchName;
             AssertName = assertName;
             Asserts = new List<AssertResult>();
-            _environment = new Dictionary<object, object>();
-            foreach (var pair in environment)
-            {
-                _environment.Add(pair.Key, pair.Value);
-            }
+            _environment = environment.Clone();
         }
 
         #endregion
@@ -32,18 +28,18 @@ namespace PS.Expression.Json
 
         public List<AssertResult> Asserts { get; }
 
+        public string BranchName { get; }
+
         public ParseContext Context { get; }
 
         public Exception Error
         {
             get
             {
-                if (!Asserts.Any()) return new ParserException("There is no assets in sequence", RuleName);
+                if (!Asserts.Any()) return new ParserException("There is no assets in sequence", BranchName);
                 return Asserts.LastOrDefault()?.Error;
             }
         }
-
-        public string RuleName { get; }
 
         #endregion
 
@@ -60,7 +56,12 @@ namespace PS.Expression.Json
 
         #region Members
 
-        public ParseBranch Assert(Func<JsonToken, Dictionary<object, object>, bool> factory)
+        public ParseBranch Assert(Func<JsonToken, ParseEnvironment, bool> factory)
+        {
+            return Assert(null, factory);
+        }
+
+        public ParseBranch Assert(string label, Func<JsonToken, ParseEnvironment, bool> factory)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
@@ -69,27 +70,28 @@ namespace PS.Expression.Json
 
             var assert = new AssertResultToken
             {
+                Label = label,
                 Index = Asserts.Count,
                 Token = aheadToken,
-                RuleName = RuleName
+                BranchName = BranchName
             };
 
             Asserts.Add(assert);
 
             try
             {
-                if (aheadToken == null) assert.Error = new ParserException("Unexpected end of sequence.", RuleName);
+                if (aheadToken == null) assert.Error = new ParserException("Unexpected end of sequence.", BranchName);
                 else
                 {
                     if (!factory(aheadToken, _environment))
                     {
-                        assert.Error = new ParserException($"Unexpected token {aheadToken}.", RuleName);
+                        assert.Error = new ParserException($"Unexpected token {aheadToken}.", BranchName);
                     }
                 }
             }
             catch (Exception e)
             {
-                assert.Error = new ParserException(null, RuleName, e);
+                assert.Error = new ParserException(null, BranchName, e);
             }
 
             return this;
@@ -97,12 +99,18 @@ namespace PS.Expression.Json
 
         public ParseBranch Assert(Action<ParseContext> factory)
         {
+            return Assert(null, factory);
+        }
+
+        public ParseBranch Assert(string label, Action<ParseContext> factory)
+        {
             if (Asserts.Any(a => a.Error != null)) return this;
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
             var assert = new AssertResultBranch
             {
+                Label = label,
                 Index = Asserts.Count,
-                RuleName = RuleName
+                BranchName = BranchName
             };
 
             Asserts.Add(assert);
@@ -112,26 +120,56 @@ namespace PS.Expression.Json
                 var localContext = Context.Branch(currentOffset, _environment);
                 factory(localContext);
 
-                var branch = localContext.SuccessBranch ?? localContext.FailedBranch;
+                ParseBranch branch;
+                if (localContext.SuccessBranch != null)
+                {
+                    branch = localContext.SuccessBranch;
+                    if (!ReferenceEquals(_environment, branch._environment))
+                    {
+                        _environment = branch._environment;
+                    }
+                }
+                else branch = localContext.FailedBranch;
                 if (branch != null) assert.Branch = branch;
-                else assert.Error = new ParserException("There is no sequence checks", RuleName);
+                else assert.Error = new ParserException("There is no sequence checks", BranchName);
             }
             catch (Exception e)
             {
-                assert.Error = new ParserException(null, RuleName, e);
+                assert.Error = new ParserException(null, BranchName, e);
             }
 
             return this;
         }
 
-        public void AssertEmpty()
+        public ParseBranch Assert(Action<ParseEnvironment> action = null)
         {
-            if (Asserts.Any(a => a.Error != null)) return;
-
-            Asserts.Add(new AssertResultEmpty());
+            return Assert(null, action);
         }
 
-        public int GetAssertsLength()
+        public ParseBranch Assert(string label, Action<ParseEnvironment> action = null)
+        {
+            if (Asserts.Any(a => a.Error != null)) return this;
+
+            var assert = new AssertResultEmpty
+            {
+                Label = label,
+                Index = Asserts.Count
+            };
+
+            Asserts.Add(assert);
+
+            try
+            {
+                action?.Invoke(_environment);
+            }
+            catch (Exception e)
+            {
+                assert.Error = new ParserException(null, BranchName, e);
+            }
+            return this;
+        }
+
+        public int GetTokensLength()
         {
             return Asserts.Aggregate(0, (agg, a) => agg + a.Length);
         }

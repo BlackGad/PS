@@ -26,19 +26,19 @@ namespace PS.Expression.Json
 
         #region Constructors
 
-        public ParseContext(IEnumerable<JsonToken> tokens) : this(new Dictionary<object, object>())
+        public ParseContext(IEnumerable<JsonToken> tokens) : this(new ParseEnvironment())
         {
             if (tokens == null) throw new ArgumentNullException(nameof(tokens));
             _tokens = new List<JsonToken>(tokens);
         }
 
-        private ParseContext(Dictionary<object, object> env)
+        private ParseContext(ParseEnvironment env)
         {
             _sequenceChecks = new List<ParseBranch>();
             Environment = env;
         }
 
-        private ParseContext(List<JsonToken> tokens, Dictionary<object, object> env, int offset) : this(env)
+        private ParseContext(List<JsonToken> tokens, ParseEnvironment env, int offset) : this(env)
         {
             _tokens = tokens;
             _offset = offset;
@@ -48,14 +48,14 @@ namespace PS.Expression.Json
 
         #region Properties
 
-        public Dictionary<object, object> Environment { get; }
+        public ParseEnvironment Environment { get; }
 
         public ParseBranch FailedBranch
         {
             get
             {
                 if (!_sequenceChecks.Any() || SuccessBranch != null) return null;
-                return _sequenceChecks.OrderByDescending(check => check.GetAssertsLength()).First();
+                return _sequenceChecks.OrderByDescending(check => check.GetTokensLength()).First();
             }
         }
 
@@ -65,7 +65,7 @@ namespace PS.Expression.Json
             {
                 var successBranches = _sequenceChecks.Where(c => c.Error == null).ToList();
                 if (!successBranches.Any()) return null;
-                return successBranches.OrderByDescending(check => check.GetAssertsLength()).First();
+                return successBranches.OrderByDescending(check => check.GetTokensLength()).First();
             }
         }
 
@@ -106,22 +106,22 @@ namespace PS.Expression.Json
 
         #region Members
 
-        public ParseContext Branch(int offset, Dictionary<object, object> environment)
+        public ParseContext Branch(int offset, ParseEnvironment environment)
         {
             return new ParseContext(_tokens, environment, _offset + offset);
-        }
-
-        public ParseBranch CheckSequence(string assertName, [CallerMemberName] string ruleName = null)
-        {
-            var result = new ParseBranch(this, Environment, ruleName, assertName);
-            _sequenceChecks.Add(result);
-            return result;
         }
 
         public JsonToken GetToken(int position = 0)
         {
             if (_offset + position >= 0 && _offset + position < _tokens.Count) return _tokens[_offset + position];
             return default(JsonToken);
+        }
+
+        public ParseBranch Sequence(string sequenceName, [CallerMemberName] string branchName = null)
+        {
+            var result = new ParseBranch(this, Environment, branchName, sequenceName);
+            _sequenceChecks.Add(result);
+            return result;
         }
 
         public string ToString(string format)
@@ -133,15 +133,16 @@ namespace PS.Expression.Json
         {
             if (branch == null) throw new InvalidOperationException();
             var builder = new StringBuilder();
-            builder.AppendLine($"{GenerateDGraphVertexId(id)} [color=chartreuse1] [label=\"{branch.RuleName}\"]");
+            builder.AppendLine($"{GenerateDGraphVertexId(id)} [color=chartreuse1] [label=\"{branch.BranchName}\"]");
 
             foreach (var assert in branch.Asserts.Enumerate().Reverse())
             {
                 var branchAssertResult = assert as AssertResultBranch;
                 if (branchAssertResult != null)
                 {
+                    var label = branchAssertResult.Label ?? branchAssertResult.Branch.BranchName;
                     builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [color=orange] " +
-                                       $"[label=\"{branchAssertResult.Branch.RuleName}\"]");
+                                       $"[label=\"{label}\"]");
                     builder.AppendLine($"{GenerateDGraphVertexId(id)} -> {GenerateDGraphVertexId(assert.Id)}");
                     builder.Append(GenerateDGraph(branchAssertResult.Branch, assert.Id));
                 }
@@ -150,6 +151,7 @@ namespace PS.Expression.Json
                 if (tokenAssertResult != null)
                 {
                     var color = "darkslategray1";
+                    var label = tokenAssertResult.Label ?? tokenAssertResult.Token.ToString().Replace("\"", string.Empty);
                     var tooltip = string.Empty;
                     if (assert.Error != null)
                     {
@@ -157,7 +159,7 @@ namespace PS.Expression.Json
                         tooltip = assert.Error.Message;
                     }
                     builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [color={color}]" +
-                                       $"[label=\"{tokenAssertResult.Token.ToString().Replace("\"", string.Empty)}\"]" +
+                                       $"[label=\"{label}\"]" +
                                        $"[tooltip=\"{tooltip}\"]");
                     builder.AppendLine($"{GenerateDGraphVertexId(id)} -> {GenerateDGraphVertexId(assert.Id)}");
                 }
@@ -165,7 +167,8 @@ namespace PS.Expression.Json
                 var tokenAssertEmpty = assert as AssertResultEmpty;
                 if (tokenAssertEmpty != null)
                 {
-                    builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [label=\"empty\"]");
+                    var label = tokenAssertEmpty.Label ?? "Empty";
+                    builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [label=\"{label}\"]");
                     builder.AppendLine($"{GenerateDGraphVertexId(id)} -> {GenerateDGraphVertexId(assert.Id)}");
                 }
             }

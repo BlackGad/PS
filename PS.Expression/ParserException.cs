@@ -6,8 +6,8 @@ namespace PS.Expression
     {
         #region Constructors
 
-        public ParserException(string message, string ruleName, Exception innerException = null)
-            : base($"Invalid expression syntax in {ruleName} context" +
+        public ParserException(string message, string branchName, Exception innerException = null)
+            : base($"Invalid expression syntax in {branchName} context" +
                    (string.IsNullOrWhiteSpace(message) ? string.Empty : ": " + message),
                    innerException)
         {

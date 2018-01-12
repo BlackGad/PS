@@ -15,14 +15,15 @@ namespace PS.Expression.Json
 
         #region Properties
 
+        public string BranchName { get; set; }
+
         public virtual Exception Error { get; set; }
         public Guid Id { get; }
 
         public int Index { get; set; }
+        public string Label { get; set; }
 
         public abstract int Length { get; }
-
-        public string RuleName { get; set; }
 
         #endregion
     }
