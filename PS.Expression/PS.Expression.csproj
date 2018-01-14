@@ -41,19 +41,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ParserException.cs" />
+    <Compile Include="SimpleRoute.cs" />
     <Compile Include="Test1\FluentObjectSchema.cs" />
     <Compile Include="Test1\Logic\GroupedExpression.cs" />
     <Compile Include="Test1\Logic\InterExpression.cs" />
     <Compile Include="Test1\Logic\HeadExpression.cs" />
     <Compile Include="Test1\Logic\IValueExpression.cs" />
-    <Compile Include="Test1\Logic\LogicalExpression.cs" />
+    <Compile Include="Logic\LogicalExpression.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
-    <Compile Include="Extensions\MathExtensions.cs" />
-    <Compile Include="Test1\Logic\FactorizeParams.cs" />
-    <Compile Include="Test1\Logic\ILogicalExpression.cs" />
-    <Compile Include="Test1\Logic\IInvertedLogicalExpression.cs" />
-    <Compile Include="Test1\Logic\InvertedLogicalExpression.cs" />
-    <Compile Include="Test1\Logic\LogicalOperator.cs" />
+    <Compile Include="Logic\Extensions\MathExtensions.cs" />
+    <Compile Include="Logic\FactorizeParams.cs" />
+    <Compile Include="Logic\ILogicalExpression.cs" />
+    <Compile Include="Logic\IInvertedLogicalExpression.cs" />
+    <Compile Include="Logic\InvertedLogicalExpression.cs" />
+    <Compile Include="Logic\LogicalOperator.cs" />
     <Compile Include="Test1\ExpressionVisitor.cs" />
     <Compile Include="Test1\Logic\ValueExpression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PS.Expression.Test1.Logic
+namespace PS.Expression.Logic
 {
     public class LogicalExpression : ILogicalExpression
     {
@@ -20,10 +20,7 @@ namespace PS.Expression.Test1.Logic
 
         #region Properties
 
-        public IEnumerable Expressions
-        {
-            get { return _expressions; }
-        }
+        public IEnumerable Expressions => _expressions;
 
         public LogicalOperator Operator { get; }
 

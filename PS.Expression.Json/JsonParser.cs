@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PS.Expression.Logic;
 using PS.Expression.Test2;
 using PS.Navigation;
 
@@ -53,51 +54,74 @@ namespace PS.Expression.Json
                .Assert(EXPRESSION_CONDITION)
                .Assert((t, env) => t.Type == TokenType.EOS);
 
+            var sucessBranch = ctx.SuccessBranch;
+            if (sucessBranch != null)
+            {
+                var finalEnv = sucessBranch.Environment;
+            }
             var dot = ctx.ToString("d");
+
             return tokens;
+        }
+
+        protected void MarkerCreateComplexRoute(ParseEnvironment env)
+        {
+            env[nameof(Route)] = new ComplexRoute();
+        }
+
+        protected void MarkerCreateLogicalExpression(ParseEnvironment env, LogicalOperator op)
+        {
+            env[nameof(LogicalExpression)] = new LogicalExpression(op);
+        }
+
+        protected void MarkerCreateSimpleRoute(ParseEnvironment env)
+        {
+            env[nameof(Route)] = new SimpleRoute();
         }
 
         protected bool ProcessOperator(JsonToken t, ParseEnvironment env)
         {
             if (t.Type != TokenType.Operator) return false;
-            var operatorSession = env[Keys.RouteSession] + "_operator";
-            env[operatorSession] = t.Value;
-
-            //var isValidOperator = _scheme.ProcessOperator(contextProperty, t.Value);
-            //if (isValidOperator)
-            //{
-            //}
-            //return isValidOperator;
+            var simpleRoute = (SimpleRoute)env[nameof(Route)];
+            var complexRoute = simpleRoute as ComplexRoute;
+            if (complexRoute != null && complexRoute.ComplexOperator == null) complexRoute.ComplexOperator = t.Value;
+            else
+            {
+                simpleRoute.RouteOperation = new RouteOperation
+                {
+                    Operator = t.Value
+                };
+            }
             return true;
         }
 
         protected bool ProcessRoute(JsonToken t, ParseEnvironment env)
         {
             if (t.Type != TokenType.Object) return false;
-            var routeSession = env[Keys.RouteSession] + "_route";
-            env[routeSession] = Route.Create(env[routeSession], t.Value);
-            return true;
-        }
 
-        protected void ProcessRouteSession(ParseEnvironment env)
-        {
-            env[Keys.RouteSession] = Guid.NewGuid().ToString("N");
+            var simpleRoute = (SimpleRoute)env[nameof(Route)];
+            simpleRoute.Route = Route.Create(simpleRoute.Route, t.Value);
+
+            return true;
         }
 
         private void EXPRESSION(ParseContext ctx)
         {
             ctx.Sequence("object(route) ROUTE_LIST OPERATION")
+               .Assert("(M)Simple route", MarkerCreateSimpleRoute)
                .Assert(ProcessRoute)
                .Assert(ROUTE_LIST)
                .Assert(OPERATION);
 
             ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION")
+               .Assert("(M)Complex route", MarkerCreateComplexRoute)
                .Assert(ProcessRoute)
                .Assert(ROUTE_LIST)
                .Assert(ProcessOperator)
                .Assert(EXPRESSION_CONDITION);
 
             ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION OPERATION")
+               .Assert("(M)Complex route", MarkerCreateComplexRoute)
                .Assert(ProcessRoute)
                .Assert(ROUTE_LIST)
                .Assert(ProcessOperator)
@@ -109,13 +133,16 @@ namespace PS.Expression.Json
         {
             ctx.Sequence("and EXPRESSION_CONDITION_BODY")
                .Assert((t, env) => t.Type == TokenType.And)
+               .Assert("(M)Logical expression AND", env => MarkerCreateLogicalExpression(env, LogicalOperator.And))
                .Assert(EXPRESSION_CONDITION_BODY);
 
             ctx.Sequence("or EXPRESSION_CONDITION_BODY")
                .Assert((t, env) => t.Type == TokenType.Or)
+               .Assert("(M)Logical expression OR", env => MarkerCreateLogicalExpression(env, LogicalOperator.Or))
                .Assert(EXPRESSION_CONDITION_BODY);
 
             ctx.Sequence("EXPRESSION_CONDITION_BODY")
+               .Assert("(M)Logical expression AND", env => MarkerCreateLogicalExpression(env, LogicalOperator.And))
                .Assert(EXPRESSION_CONDITION_BODY);
         }
 
@@ -131,7 +158,6 @@ namespace PS.Expression.Json
         {
             var id = Guid.NewGuid();
             ctx.Sequence("EXPRESSION EXPRESSION_LIST")
-               .Assert("(M)Route session", ProcessRouteSession)
                .Assert(EXPRESSION)
                .Assert(EXPRESSION_LIST);
 

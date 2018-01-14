@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PS.Expression.Test1.Logic
+namespace PS.Expression.Logic
 {
     public class FactorizeParams
     {

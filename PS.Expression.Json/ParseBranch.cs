@@ -6,8 +6,6 @@ namespace PS.Expression.Json
 {
     public class ParseBranch
     {
-        private ParseEnvironment _environment;
-
         #region Constructors
 
         public ParseBranch(ParseContext context, ParseEnvironment environment, string branchName, string assertName)
@@ -17,7 +15,7 @@ namespace PS.Expression.Json
             BranchName = branchName;
             AssertName = assertName;
             Asserts = new List<AssertResult>();
-            _environment = environment.Clone();
+            Environment = environment.Clone();
         }
 
         #endregion
@@ -31,6 +29,7 @@ namespace PS.Expression.Json
         public string BranchName { get; }
 
         public ParseContext Context { get; }
+        public ParseEnvironment Environment { get; private set; }
 
         public Exception Error
         {
@@ -83,7 +82,7 @@ namespace PS.Expression.Json
                 if (aheadToken == null) assert.Error = new ParserException("Unexpected end of sequence.", BranchName);
                 else
                 {
-                    if (!factory(aheadToken, _environment))
+                    if (!factory(aheadToken, Environment))
                     {
                         assert.Error = new ParserException($"Unexpected token {aheadToken}.", BranchName);
                     }
@@ -117,16 +116,16 @@ namespace PS.Expression.Json
 
             try
             {
-                var localContext = Context.Branch(currentOffset, _environment);
+                var localContext = Context.Branch(currentOffset, Environment);
                 factory(localContext);
 
                 ParseBranch branch;
                 if (localContext.SuccessBranch != null)
                 {
                     branch = localContext.SuccessBranch;
-                    if (!ReferenceEquals(_environment, branch._environment))
+                    if (!ReferenceEquals(Environment, branch.Environment))
                     {
-                        _environment = branch._environment;
+                        Environment = branch.Environment;
                     }
                 }
                 else branch = localContext.FailedBranch;
@@ -160,7 +159,7 @@ namespace PS.Expression.Json
 
             try
             {
-                action?.Invoke(_environment);
+                action?.Invoke(Environment);
             }
             catch (Exception e)
             {

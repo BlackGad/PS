@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using PS.Expression.Test1.Logic;
+using PS.Expression.Extensions;
 
-namespace PS.Expression.Extensions
+namespace PS.Expression.Logic.Extensions
 {
     public static class MathExtensions
     {
