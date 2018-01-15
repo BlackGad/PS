@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model
+namespace PS.Query.Tests.TestReferences.ExpressionBuilderTests.Model
 {
     public class Template
     {

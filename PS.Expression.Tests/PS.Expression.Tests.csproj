@@ -7,7 +7,7 @@
     <ProjectGuid>{EF9A9343-CAC3-49B0-ABB4-2E2485432316}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PS.Expression.Tests</RootNamespace>
+    <RootNamespace>PS.Query.Tests</RootNamespace>
     <AssemblyName>PS.Expression.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -48,7 +48,6 @@
     <Compile Include="TestReferences\ExpressionBuilderTests\Model\License.cs" />
     <Compile Include="TestReferences\ExpressionBuilderTests\ModelBuilder.cs" />
     <Compile Include="TestReferences\ExpressionBuilderTests\Model\Template.cs" />
-    <Compile Include="TestReferences\ExpressionBuilderTests\TestVisitor.cs" />
     <Compile Include="Tests\ExpressionBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

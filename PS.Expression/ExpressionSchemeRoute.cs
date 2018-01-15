@@ -1,7 +1,8 @@
 using System;
+using System.Linq.Expressions;
 using PS.Navigation;
 
-namespace PS.Expression.Test2
+namespace PS.Query
 {
     public class ExpressionSchemeRoute
     {
@@ -10,9 +11,14 @@ namespace PS.Expression.Test2
         /// <summary>
         ///     Initializes a new instance of the <see cref="T:System.Object" /> class.
         /// </summary>
-        public ExpressionSchemeRoute(Route route, Type type, ExpressionSchemeRouteOptions options)
+        public ExpressionSchemeRoute(Route route, Type type, ExpressionSchemeRouteOptions options, MemberExpression accessor)
         {
+            if (route == null) throw new ArgumentNullException(nameof(route));
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
             Options = options;
+            Accessor = accessor;
             Route = route;
             Type = type;
         }
@@ -21,6 +27,7 @@ namespace PS.Expression.Test2
 
         #region Properties
 
+        public MemberExpression Accessor { get; }
         public ExpressionSchemeRouteOptions Options { get; }
         public Route Route { get; }
         public Type Type { get; }

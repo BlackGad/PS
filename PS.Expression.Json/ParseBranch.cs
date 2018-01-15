@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PS.Expression.Json
+namespace PS.Query.Json
 {
     public class ParseBranch
     {
@@ -123,10 +123,7 @@ namespace PS.Expression.Json
                 if (localContext.SuccessBranch != null)
                 {
                     branch = localContext.SuccessBranch;
-                    if (!ReferenceEquals(Environment, branch.Environment))
-                    {
-                        Environment = branch.Environment;
-                    }
+                    branch.Environment.Clone(Environment);
                 }
                 else branch = localContext.FailedBranch;
                 if (branch != null) assert.Branch = branch;

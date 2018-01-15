@@ -7,7 +7,7 @@
     <ProjectGuid>{F318C692-2842-4D33-95D2-13356F588B34}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PS.Expression.Json</RootNamespace>
+    <RootNamespace>PS.Query.Json</RootNamespace>
     <AssemblyName>PS.Expression.Json</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -48,7 +48,7 @@
     <Compile Include="AssertResultEmpty.cs" />
     <Compile Include="AssertResultBranch.cs" />
     <Compile Include="JsonExpressionVisitor.cs" />
-    <Compile Include="JsonParser.cs" />
+    <Compile Include="JsonExpressionProvider.cs" />
     <Compile Include="JsonTokenizer.cs" />
     <Compile Include="JsonToken.cs" />
     <Compile Include="ParseBranch.cs" />

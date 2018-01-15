@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PS.Expression.Test2.Fluent
+namespace PS.Query.Fluent
 {
     public class ExpressionOperatorBuilder
     {
@@ -36,12 +36,13 @@ namespace PS.Expression.Test2.Fluent
             return this;
         }
 
-        public ExpressionSchemeOperators Register()
+        public ExpressionSchemeOperators Register(Func<System.Linq.Expressions.Expression, object, System.Linq.Expressions.Expression> factory)
         {
             _expressionSchemeOperators.Register(new ExpressionOperator
             {
                 Token = _token,
                 AppliedTo = _appliedTo,
+                ExpressionFactory = factory,
                 ProducedResult = _producedResult,
                 Key = _key
             });

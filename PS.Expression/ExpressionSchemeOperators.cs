@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PS.Expression.Test2.Fluent;
+using PS.Query.Fluent;
 
-namespace PS.Expression.Test2
+namespace PS.Query
 {
     public class ExpressionSchemeOperators
     {

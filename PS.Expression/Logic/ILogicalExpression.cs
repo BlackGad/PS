@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace PS.Expression.Logic
+namespace PS.Query.Logic
 {
     public interface ILogicalExpression
     {

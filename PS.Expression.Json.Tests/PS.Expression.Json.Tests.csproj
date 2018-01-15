@@ -7,7 +7,7 @@
     <ProjectGuid>{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PS.Expression.Json.Tests</RootNamespace>
+    <RootNamespace>PS.Query.Json.Tests</RootNamespace>
     <AssemblyName>PS.Expression.Json.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -52,6 +52,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PS.Core\PS.Core.csproj">
+      <Project>{d26839ec-992d-4ba3-95a0-354cfabb6e74}</Project>
+      <Name>PS.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PS.Expression.Json\PS.Expression.Json.csproj">
       <Project>{f318c692-2842-4d33-95d2-13356f588b34}</Project>
       <Name>PS.Expression.Json</Name>

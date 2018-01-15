@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PS.Expression.Test2.Fluent
+namespace PS.Query.Fluent
 {
     public class ExpressionOperatorReferencesBuilder
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using PS.Expression.Tests.TestReferences.ExpressionBuilderTests.Model;
+using PS.Query.Tests.TestReferences.ExpressionBuilderTests.Model;
 
-namespace PS.Expression.Tests.TestReferences.ExpressionBuilderTests
+namespace PS.Query.Tests.TestReferences.ExpressionBuilderTests
 {
-    class ModelBuilder
+    public class ModelBuilder
     {
         #region Static members
 

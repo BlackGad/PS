@@ -1,4 +1,4 @@
-﻿namespace PS.Expression.Json
+﻿namespace PS.Query.Json
 {
     public class JsonToken
     {

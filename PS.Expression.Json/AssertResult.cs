@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PS.Expression.Json
+namespace PS.Query.Json
 {
     public abstract class AssertResult
     {

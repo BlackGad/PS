@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace PS.Expression.Json
+namespace PS.Query.Json
 {
     public class JsonTokenizer
     {

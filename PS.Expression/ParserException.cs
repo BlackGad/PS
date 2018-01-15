@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PS.Expression
+namespace PS.Query
 {
     public class ParserException : InvalidOperationException
     {

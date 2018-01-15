@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
 
-namespace PS.Expression.Json
+namespace PS.Query.Json
 {
     public class ParseEnvironment
     {
@@ -11,11 +12,14 @@ namespace PS.Expression.Json
         public ParseEnvironment()
         {
             _environment = new Dictionary<object, object>();
+            Id = Guid.NewGuid();
         }
 
         #endregion
 
         #region Properties
+
+        public Guid Id { get; }
 
         public object this[object key]
         {
@@ -28,6 +32,8 @@ namespace PS.Expression.Json
             {
                 if (_environment.ContainsKey(key)) _environment[key] = value;
                 else _environment.Add(key, value);
+
+                if (value == null) _environment.Remove(key);
             }
         }
 
@@ -37,13 +43,36 @@ namespace PS.Expression.Json
 
         public ParseEnvironment Clone()
         {
-            var result = new ParseEnvironment();
+            return Clone(new ParseEnvironment());
+        }
+
+        public ParseEnvironment Clone(ParseEnvironment env)
+        {
+            if (env == null) throw new ArgumentNullException(nameof(env));
+            env._environment.Clear();
             foreach (var pair in _environment)
             {
-                result._environment.Add(pair.Key, pair.Value);
+                env._environment.Add(pair.Key, pair.Value);
             }
 
+            return env;
+        }
+
+        public T Get<T>()
+        {
+            return (T)this[typeof(T)];
+        }
+
+        public T Pop<T>()
+        {
+            var result = Get<T>();
+            Set(default(T));
             return result;
+        }
+
+        public void Set<T>(T value)
+        {
+            this[typeof(T)] = value;
         }
 
         #endregion

@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using PS.Extensions;
 
-namespace PS.Expression.Json
+namespace PS.Query.Json
 {
     public class ParseContext : IFormattable
     {

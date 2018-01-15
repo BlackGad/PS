@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PS.Expression.Extensions
+namespace PS.Query.Extensions
 {
     public static class CollectionExtensions
     {
