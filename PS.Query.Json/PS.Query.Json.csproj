@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PS.Query.Json</RootNamespace>
-    <AssemblyName>PS.Expression.Json</AssemblyName>
+    <AssemblyName>PS.Query.Json</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -58,9 +58,9 @@
       <Project>{D26839EC-992D-4BA3-95A0-354CFABB6E74}</Project>
       <Name>PS.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PS.Expression\PS.Expression.csproj">
+    <ProjectReference Include="..\PS.Query\PS.Query.csproj">
       <Project>{2b3db529-cf2c-4397-b5cd-2ff71587f74f}</Project>
-      <Name>PS.Expression</Name>
+      <Name>PS.Query</Name>
     </ProjectReference>
     <ProjectReference Include="..\PS.Parser\PS.Parser.csproj">
       <Project>{be889116-e82f-4890-9da7-c1b71f2e7677}</Project>

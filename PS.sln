@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
@@ -18,13 +18,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Expression", "PS.Expression\PS.Expression.csproj", "{2B3DB529-CF2C-4397-B5CD-2FF71587F74F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Query", "PS.Query\PS.Query.csproj", "{2B3DB529-CF2C-4397-B5CD-2FF71587F74F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Expression.Json", "PS.Expression.Json\PS.Expression.Json.csproj", "{F318C692-2842-4D33-95D2-13356F588B34}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Query.Json", "PS.Query.Json\PS.Query.Json.csproj", "{F318C692-2842-4D33-95D2-13356F588B34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Expression.Json.Tests", "PS.Expression.Json.Tests\PS.Expression.Json.Tests.csproj", "{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Query.Json.Tests", "PS.Query.Json.Tests\PS.Query.Json.Tests.csproj", "{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Expression.Tests", "PS.Expression.Tests\PS.Expression.Tests.csproj", "{EF9A9343-CAC3-49B0-ABB4-2E2485432316}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Query.Tests", "PS.Query.Tests\PS.Query.Tests.csproj", "{EF9A9343-CAC3-49B0-ABB4-2E2485432316}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.Parser", "PS.Parser\PS.Parser.csproj", "{BE889116-E82F-4890-9DA7-C1B71F2E7677}"
 EndProject

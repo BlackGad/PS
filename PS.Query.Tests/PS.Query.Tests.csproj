@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}</ProjectGuid>
+    <ProjectGuid>{EF9A9343-CAC3-49B0-ABB4-2E2485432316}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PS.Query.Json.Tests</RootNamespace>
-    <AssemblyName>PS.Expression.Json.Tests</AssemblyName>
+    <RootNamespace>PS.Query.Tests</RootNamespace>
+    <AssemblyName>PS.Query.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -48,34 +44,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Tests.cs" />
+    <Compile Include="TestReferences\ExpressionBuilderTests\Model\Claim.cs" />
+    <Compile Include="TestReferences\ExpressionBuilderTests\Model\License.cs" />
+    <Compile Include="TestReferences\ExpressionBuilderTests\ModelBuilder.cs" />
+    <Compile Include="TestReferences\ExpressionBuilderTests\Model\Template.cs" />
+    <Compile Include="Tests\ExpressionBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PS.Core\PS.Core.csproj">
-      <Project>{d26839ec-992d-4ba3-95a0-354cfabb6e74}</Project>
-      <Name>PS.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PS.Expression.Json\PS.Expression.Json.csproj">
-      <Project>{f318c692-2842-4d33-95d2-13356f588b34}</Project>
-      <Name>PS.Expression.Json</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PS.Expression.Tests\PS.Expression.Tests.csproj">
-      <Project>{ef9a9343-cac3-49b0-abb4-2e2485432316}</Project>
-      <Name>PS.Expression.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PS.Expression\PS.Expression.csproj">
-      <Project>{2b3db529-cf2c-4397-b5cd-2ff71587f74f}</Project>
-      <Name>PS.Expression</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Content Include="TextFile1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\PS.Core\PS.Core.csproj">
+      <Project>{D26839EC-992D-4BA3-95A0-354CFABB6E74}</Project>
+      <Name>PS.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PS.Query\PS.Query.csproj">
+      <Project>{2b3db529-cf2c-4397-b5cd-2ff71587f74f}</Project>
+      <Name>PS.Query</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

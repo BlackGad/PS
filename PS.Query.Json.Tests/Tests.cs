@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -116,7 +116,7 @@ namespace PS.Query.Json.Tests
                   .Route(src => src.Type)
                   .Route(src => src.Name);
 
-            var json = File.ReadAllText(@"D:\GitHub\PS\PS.Expression.Json.Tests\TextFile1.txt");
+            var json = File.ReadAllText(@"D:\GitHub\PS\PS.Query.Json.Tests\TextFile1.txt");
             var jToken = (JToken)JsonConvert.DeserializeObject(json);
             var provider = new JsonExpressionProvider(jToken);
             var licenses = ModelBuilder.CreateModel();
