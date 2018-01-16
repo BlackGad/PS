@@ -50,6 +50,7 @@ namespace PS.Query.Json
             ctx.Sequence("EXPRESSION_CONDITION eos")
                .Assert(EXPRESSION_CONDITION)
                .Assert((t, env) => t.Type == TokenType.EOS);
+
             if (ctx.FailedBranch != null) throw ctx.FailedBranch.Error;
             if (ctx.SuccessBranch != null) return ctx.SuccessBranch.Environment.Get<LogicalExpression>();
             throw new InvalidOperationException();
@@ -99,36 +100,36 @@ namespace PS.Query.Json
         private void EXPRESSION(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("object(route) ROUTE_LIST OPERATION")
-               .Assert("(M)Create route", env => env.Set(new RouteExpression()))
+               .Assert("Create route", env => env.Set(new RouteExpression()))
                .Assert(AggregateContextRoute)
                .Assert(ROUTE_LIST)
                .Assert(OPERATION)
-               .Assert("(M)Commit route", CommitContextRoute);
+               .Assert("Commit route", CommitContextRoute);
 
             ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION")
-               .Assert("(M)Create route", env => env.Set<RouteExpression>(new ComplexRouteExpression()))
+               .Assert("Create route", env => env.Set<RouteExpression>(new ComplexRouteExpression()))
                .Assert(AggregateContextRoute)
                .Assert(ROUTE_LIST)
                .Assert((token, env) => CheckToken(token,
                                                   TokenType.Operator,
                                                   () => ((ComplexRouteExpression)env.Get<RouteExpression>()).ComplexOperator = token.Value))
-               .Assert("(M)Push route", SaveContextRoute)
+               .Assert("Push route", SaveContextRoute)
                .Assert(EXPRESSION_CONDITION)
-               .Assert("(M)Pop route", RestoreContextRoute)
-               .Assert("(M)Commit route", CommitContextRoute);
+               .Assert("Pop route", RestoreContextRoute)
+               .Assert("Commit route", CommitContextRoute);
 
             ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION OPERATION")
-               .Assert("(M)Create route", env => env.Set<RouteExpression>(new ComplexRouteExpression()))
+               .Assert("Create route", env => env.Set<RouteExpression>(new ComplexRouteExpression()))
                .Assert(AggregateContextRoute)
                .Assert(ROUTE_LIST)
                .Assert((token, env) => CheckToken(token,
                                                   TokenType.Operator,
                                                   () => ((ComplexRouteExpression)env.Get<RouteExpression>()).ComplexOperator = token.Value))
-               .Assert("(M)Save route", SaveContextRoute)
+               .Assert("Save route", SaveContextRoute)
                .Assert(EXPRESSION_CONDITION)
-               .Assert("(M)Pop route", RestoreContextRoute)
+               .Assert("Pop route", RestoreContextRoute)
                .Assert(OPERATION)
-               .Assert("(M)Commit route", CommitContextRoute);
+               .Assert("Commit route", CommitContextRoute);
         }
 
         private void EXPRESSION_CONDITION(ParseContext<JsonToken> ctx)
@@ -136,23 +137,23 @@ namespace PS.Query.Json
             ctx.Sequence("and EXPRESSION_CONDITION_BODY")
                .Assert((t, env) => t.Type == TokenType.And)
                .Assert(EXPRESSION_CONDITION_BODY)
-               .Assert("(M)Commit AND expression", env => env.Set(new LogicalExpression(LogicalOperator.And, env.Get<RouteExpression[]>())));
+               .Assert("Commit AND expression", env => env.Set(new LogicalExpression(LogicalOperator.And, env.Get<RouteExpression[]>())));
 
             ctx.Sequence("or EXPRESSION_CONDITION_BODY")
                .Assert((t, env) => t.Type == TokenType.Or)
                .Assert(EXPRESSION_CONDITION_BODY)
-               .Assert("(M)Commit OR expression", env => env.Set(new LogicalExpression(LogicalOperator.Or, env.Get<RouteExpression[]>())));
+               .Assert("Commit OR expression", env => env.Set(new LogicalExpression(LogicalOperator.Or, env.Get<RouteExpression[]>())));
 
             ctx.Sequence("EXPRESSION_CONDITION_BODY")
                .Assert(EXPRESSION_CONDITION_BODY)
-               .Assert("(M)Commit AND expression", env => env.Set(new LogicalExpression(LogicalOperator.And, env.Get<RouteExpression[]>())));
+               .Assert("Commit AND expression", env => env.Set(new LogicalExpression(LogicalOperator.And, env.Get<RouteExpression[]>())));
         }
 
         private void EXPRESSION_CONDITION_BODY(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("ArrayStart EXPRESSION_LIST ArrayEnd")
                .Assert((t, env) => t.Type == TokenType.ArrayStart)
-               .Assert("(M)Create route list", env => env.Set(new RouteExpression[] { }))
+               .Assert("Create route list", env => env.Set(new RouteExpression[] { }))
                .Assert(EXPRESSION_LIST)
                .Assert((t, env) => t.Type == TokenType.ArrayEnd);
         }
@@ -170,17 +171,17 @@ namespace PS.Query.Json
         private void OPERATION(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("not operator value")
-               .Assert("(M)Create operator", env => env.Set(new OperatorExpression()))
+               .Assert("Create operator", env => env.Set(new OperatorExpression()))
                .Assert((t, env) => CheckToken(t, TokenType.Not, () => env.Get<OperatorExpression>().Inverted = true))
                .Assert((t, env) => CheckToken(t, TokenType.Operator, () => env.Get<OperatorExpression>().Operator = t.Value))
                .Assert((t, env) => CheckToken(t, TokenType.Value, () => env.Get<OperatorExpression>().Value = t.Value))
-               .Assert("(M)Commit operator", env => env.Get<RouteExpression>().Operator = env.Get<OperatorExpression>());
+               .Assert("Commit operator", env => env.Get<RouteExpression>().Operator = env.Get<OperatorExpression>());
 
             ctx.Sequence("operator value")
-               .Assert("(M)Create operator", env => env.Set(new OperatorExpression()))
+               .Assert("Create operator", env => env.Set(new OperatorExpression()))
                .Assert((t, env) => CheckToken(t, TokenType.Operator, () => env.Get<OperatorExpression>().Operator = t.Value))
                .Assert((t, env) => CheckToken(t, TokenType.Value, () => env.Get<OperatorExpression>().Value = t.Value))
-               .Assert("(M)Commit operator", env => env.Get<RouteExpression>().Operator = env.Get<OperatorExpression>());
+               .Assert("Commit operator", env => env.Get<RouteExpression>().Operator = env.Get<OperatorExpression>());
         }
 
         private void ROUTE_LIST(ParseContext<JsonToken> ctx)

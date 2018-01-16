@@ -47,7 +47,6 @@
     <Compile Include="SchemeComplexRoute.cs" />
     <Compile Include="SchemeConverters.cs" />
     <Compile Include="Logic\LogicalExpression.cs" />
-    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Logic\Extensions\MathExtensions.cs" />
     <Compile Include="Logic\FactorizeParams.cs" />
     <Compile Include="Logic\ILogicalExpression.cs" />

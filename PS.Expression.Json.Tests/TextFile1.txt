@@ -1,23 +1,7 @@
 ﻿{ 
     "or" : 
     [	
-        { 
-            "claims":
-            { 
-                "any" : 
-                [
-                    { "type": { "equal": "claim_type_1" } }
-                ]
-            }
-        },
-        { 
-            "claims":
-            { 
-                "any" : 
-                [
-                    { "type": { "equal": "claim_type_3" } }
-                ]
-            }
-        }
+        { "claims":{ "any" : [{ "type": { "equal": "claim_type_1" } }]}},
+        { "claims":{ "any" : [{ "type": { "equal": "claim_type_3" } }]}}
     ]
 }

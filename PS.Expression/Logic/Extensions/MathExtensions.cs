@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using PS.Query.Extensions;
+using PS.Extensions;
 
 namespace PS.Query.Logic.Extensions
 {
