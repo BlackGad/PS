@@ -1,6 +1,6 @@
 ﻿namespace PS.Query.Json
 {
-    public enum TokenType
+    enum TokenType
     {
         Undefined,
         ArrayStart,

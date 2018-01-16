@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace PS.Query.Json
+namespace PS.Parser
 {
-    public abstract class AssertResult
+    internal abstract class AssertResult
     {
         #region Constructors
 

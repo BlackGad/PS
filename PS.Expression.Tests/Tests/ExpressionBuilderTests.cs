@@ -11,13 +11,13 @@ namespace PS.Query.Tests.Tests
         //    var scheme = new ExpressionScheme<License>();
 
         //    scheme.Operators
-        //          .Construct<Guid>("equals").Register( /*factory*/)
-        //          .Construct<string>("equals").Register( /*factory*/)
-        //          .Construct<string>("startWith").Register( /*factory*/)
-        //          .Construct<string>("endWith").Register( /*factory*/)
-        //          .Construct<string>("contains").Register( /*factory*/)
-        //          .Construct<IEnumerable>("any").Register( /*factory*/)
-        //          .Construct<string>("isUpper").Key("custom").Register( /*factory*/);
+        //          .Simple<Guid>("equals").Register( /*factory*/)
+        //          .Simple<string>("equals").Register( /*factory*/)
+        //          .Simple<string>("startWith").Register( /*factory*/)
+        //          .Simple<string>("endWith").Register( /*factory*/)
+        //          .Simple<string>("contains").Register( /*factory*/)
+        //          .Simple<IEnumerable>("any").Register( /*factory*/)
+        //          .Simple<string>("isUpper").Key("custom").Register( /*factory*/);
 
         //    scheme.Map
         //          .Route(src => src.Id)

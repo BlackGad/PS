@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PS.Query.Json
+namespace PS.Parser
 {
-    public class ParseBranch
+    public class ParseBranch<TToken>
     {
         #region Constructors
 
-        public ParseBranch(ParseContext context, ParseEnvironment environment, string branchName, string assertName)
+        internal ParseBranch(ParseContext<TToken> context, ParseEnvironment environment, string branchName, string assertName)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             Context = context;
@@ -22,14 +22,7 @@ namespace PS.Query.Json
 
         #region Properties
 
-        public string AssertName { get; }
-
-        public List<AssertResult> Asserts { get; }
-
-        public string BranchName { get; }
-
-        public ParseContext Context { get; }
-        public ParseEnvironment Environment { get; private set; }
+        public ParseEnvironment Environment { get; }
 
         public Exception Error
         {
@@ -39,6 +32,14 @@ namespace PS.Query.Json
                 return Asserts.LastOrDefault()?.Error;
             }
         }
+
+        internal string AssertName { get; }
+
+        internal List<AssertResult> Asserts { get; }
+
+        internal string BranchName { get; }
+
+        internal ParseContext<TToken> Context { get; }
 
         #endregion
 
@@ -55,19 +56,19 @@ namespace PS.Query.Json
 
         #region Members
 
-        public ParseBranch Assert(Func<JsonToken, ParseEnvironment, bool> factory)
+        public ParseBranch<TToken> Assert(Func<TToken, ParseEnvironment, bool> factory)
         {
             return Assert(null, factory);
         }
 
-        public ParseBranch Assert(string label, Func<JsonToken, ParseEnvironment, bool> factory)
+        public ParseBranch<TToken> Assert(string label, Func<TToken, ParseEnvironment, bool> factory)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
 
             var aheadToken = Context.GetToken(currentOffset);
 
-            var assert = new AssertResultToken
+            var assert = new AssertResultToken<TToken>
             {
                 Label = label,
                 Index = Asserts.Count,
@@ -96,16 +97,16 @@ namespace PS.Query.Json
             return this;
         }
 
-        public ParseBranch Assert(Action<ParseContext> factory)
+        public ParseBranch<TToken> Assert(Action<ParseContext<TToken>> factory)
         {
             return Assert(null, factory);
         }
 
-        public ParseBranch Assert(string label, Action<ParseContext> factory)
+        public ParseBranch<TToken> Assert(string label, Action<ParseContext<TToken>> factory)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
-            var assert = new AssertResultBranch
+            var assert = new AssertResultBranch<TToken>
             {
                 Label = label,
                 Index = Asserts.Count,
@@ -119,7 +120,7 @@ namespace PS.Query.Json
                 var localContext = Context.Branch(currentOffset, Environment);
                 factory(localContext);
 
-                ParseBranch branch;
+                ParseBranch<TToken> branch;
                 if (localContext.SuccessBranch != null)
                 {
                     branch = localContext.SuccessBranch;
@@ -137,12 +138,12 @@ namespace PS.Query.Json
             return this;
         }
 
-        public ParseBranch Assert(Action<ParseEnvironment> action = null)
+        public ParseBranch<TToken> Assert(Action<ParseEnvironment> action = null)
         {
             return Assert(null, action);
         }
 
-        public ParseBranch Assert(string label, Action<ParseEnvironment> action = null)
+        public ParseBranch<TToken> Assert(string label, Action<ParseEnvironment> action = null)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
 
@@ -165,7 +166,7 @@ namespace PS.Query.Json
             return this;
         }
 
-        public int GetTokensLength()
+        internal int GetTokensLength()
         {
             return Asserts.Aggregate(0, (agg, a) => agg + a.Length);
         }

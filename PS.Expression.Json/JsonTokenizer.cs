@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PS.Query.Json
 {
-    public class JsonTokenizer
+    class JsonTokenizer
     {
         #region Members
 
@@ -42,14 +42,16 @@ namespace PS.Query.Json
             {
                 JsonToken jsonToken;
 
-                if (properties.Count > 1 || property.Value is JValue)
+                if (string.Equals(property.Name, "not", StringComparison.InvariantCultureIgnoreCase))
+                    jsonToken = new JsonToken(TokenType.Not);
+                else if (properties.Count > 1 || property.Value is JValue)
                     jsonToken = new JsonToken(TokenType.Operator, property.Name);
                 else if (string.Equals(property.Name, "and", StringComparison.InvariantCultureIgnoreCase))
                     jsonToken = new JsonToken(TokenType.And);
                 else if (string.Equals(property.Name, "or", StringComparison.InvariantCultureIgnoreCase))
                     jsonToken = new JsonToken(TokenType.Or);
-                else if (string.Equals(property.Name, "not", StringComparison.InvariantCultureIgnoreCase))
-                    jsonToken = new JsonToken(TokenType.Not);
+                else if (properties.Count == 1 && property.Value is JArray)
+                    jsonToken = new JsonToken(TokenType.Operator, property.Name);
                 else jsonToken = new JsonToken(TokenType.Object, property.Name);
 
                 result.Add(jsonToken);

@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace PS.Query.Json
+namespace PS.Parser
 {
-    public class AssertResultBranch : AssertResult
+    internal class AssertResultBranch<TToken> : AssertResult
     {
         #region Properties
 
-        public ParseBranch Branch { get; set; }
+        public ParseBranch<TToken> Branch { get; set; }
 
         public override Exception Error
         {

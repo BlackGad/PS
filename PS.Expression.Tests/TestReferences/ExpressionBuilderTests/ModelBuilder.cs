@@ -15,7 +15,7 @@ namespace PS.Query.Tests.TestReferences.ExpressionBuilderTests
             {
                 new License
                 {
-                    Id = Guid.NewGuid(),
+                    Id = new Guid("dcec5d8f-6c10-4c0c-9e1b-1c9abc2f268c"),
                     Template = template,
                     Claims = new List<Claim>
                     {

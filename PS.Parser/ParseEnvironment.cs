@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PS.Query.Json
+namespace PS.Parser
 {
     public class ParseEnvironment
     {

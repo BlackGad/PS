@@ -2,13 +2,13 @@
 
 namespace PS.Query.Fluent
 {
-    public class ExpressionOperatorReferencesBuilder
+    public class OperatorReferencesBuilder
     {
-        private readonly ExpressionSchemeRouteOptions _options;
+        private readonly SchemeRouteOptions _options;
 
         #region Constructors
 
-        public ExpressionOperatorReferencesBuilder(ExpressionSchemeRouteOptions options)
+        public OperatorReferencesBuilder(SchemeRouteOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
             _options = options;
@@ -18,13 +18,13 @@ namespace PS.Query.Fluent
 
         #region Members
 
-        public ExpressionOperatorReferencesBuilder Include(string key)
+        public OperatorReferencesBuilder Include(string key)
         {
             _options.AdditionalOperators.Add(key);
             return this;
         }
 
-        public ExpressionOperatorReferencesBuilder Reset()
+        public OperatorReferencesBuilder Reset()
         {
             _options.IncludeDefaultOperators = false;
             return this;

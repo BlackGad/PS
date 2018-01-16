@@ -6,11 +6,16 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using PS.Extensions;
 
-namespace PS.Query.Json
+namespace PS.Parser
 {
-    public class ParseContext : IFormattable
+    public class ParseContext<TToken> : IFormattable
     {
         #region Static members
+
+        public static ParseContext<TToken> Parse(IEnumerable<TToken> tokens)
+        {
+            return new ParseContext<TToken>(tokens);
+        }
 
         private static string GenerateDGraphVertexId(Guid id)
         {
@@ -21,24 +26,24 @@ namespace PS.Query.Json
 
         private readonly int _offset;
 
-        private readonly List<ParseBranch> _sequenceChecks;
-        private readonly List<JsonToken> _tokens;
+        private readonly List<ParseBranch<TToken>> _sequenceChecks;
+        private readonly List<TToken> _tokens;
 
         #region Constructors
 
-        public ParseContext(IEnumerable<JsonToken> tokens) : this(new ParseEnvironment())
+        internal ParseContext(IEnumerable<TToken> tokens) : this(new ParseEnvironment())
         {
             if (tokens == null) throw new ArgumentNullException(nameof(tokens));
-            _tokens = new List<JsonToken>(tokens);
+            _tokens = new List<TToken>(tokens);
         }
 
         private ParseContext(ParseEnvironment env)
         {
-            _sequenceChecks = new List<ParseBranch>();
+            _sequenceChecks = new List<ParseBranch<TToken>>();
             Environment = env;
         }
 
-        private ParseContext(List<JsonToken> tokens, ParseEnvironment env, int offset) : this(env)
+        private ParseContext(List<TToken> tokens, ParseEnvironment env, int offset) : this(env)
         {
             _tokens = tokens;
             _offset = offset;
@@ -50,7 +55,7 @@ namespace PS.Query.Json
 
         public ParseEnvironment Environment { get; }
 
-        public ParseBranch FailedBranch
+        public ParseBranch<TToken> FailedBranch
         {
             get
             {
@@ -59,7 +64,7 @@ namespace PS.Query.Json
             }
         }
 
-        public ParseBranch SuccessBranch
+        public ParseBranch<TToken> SuccessBranch
         {
             get
             {
@@ -106,20 +111,9 @@ namespace PS.Query.Json
 
         #region Members
 
-        public ParseContext Branch(int offset, ParseEnvironment environment)
+        public ParseBranch<TToken> Sequence(string sequenceName, [CallerMemberName] string branchName = null)
         {
-            return new ParseContext(_tokens, environment, _offset + offset);
-        }
-
-        public JsonToken GetToken(int position = 0)
-        {
-            if (_offset + position >= 0 && _offset + position < _tokens.Count) return _tokens[_offset + position];
-            return default(JsonToken);
-        }
-
-        public ParseBranch Sequence(string sequenceName, [CallerMemberName] string branchName = null)
-        {
-            var result = new ParseBranch(this, Environment, branchName, sequenceName);
+            var result = new ParseBranch<TToken>(this, Environment, branchName, sequenceName);
             _sequenceChecks.Add(result);
             return result;
         }
@@ -129,7 +123,18 @@ namespace PS.Query.Json
             return ToString(format, CultureInfo.InvariantCulture);
         }
 
-        private string GenerateDGraph(ParseBranch branch, Guid id)
+        internal ParseContext<TToken> Branch(int offset, ParseEnvironment environment)
+        {
+            return new ParseContext<TToken>(_tokens, environment, _offset + offset);
+        }
+
+        internal TToken GetToken(int position = 0)
+        {
+            if (_offset + position >= 0 && _offset + position < _tokens.Count) return _tokens[_offset + position];
+            return default(TToken);
+        }
+
+        private string GenerateDGraph(ParseBranch<TToken> branch, Guid id)
         {
             if (branch == null) throw new InvalidOperationException();
             var builder = new StringBuilder();
@@ -137,7 +142,7 @@ namespace PS.Query.Json
 
             foreach (var assert in branch.Asserts.Enumerate().Reverse())
             {
-                var branchAssertResult = assert as AssertResultBranch;
+                var branchAssertResult = assert as AssertResultBranch<TToken>;
                 if (branchAssertResult != null)
                 {
                     var label = branchAssertResult.Label ?? branchAssertResult.Branch.BranchName;
@@ -147,7 +152,7 @@ namespace PS.Query.Json
                     builder.Append(GenerateDGraph(branchAssertResult.Branch, assert.Id));
                 }
 
-                var tokenAssertResult = assert as AssertResultToken;
+                var tokenAssertResult = assert as AssertResultToken<TToken>;
                 if (tokenAssertResult != null)
                 {
                     var color = "darkslategray1";

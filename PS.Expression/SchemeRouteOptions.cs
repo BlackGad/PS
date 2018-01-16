@@ -3,13 +3,13 @@ using PS.Query.Fluent;
 
 namespace PS.Query
 {
-    public class ExpressionSchemeRouteOptions
+    public class SchemeRouteOptions
     {
         #region Constructors
 
-        public ExpressionSchemeRouteOptions()
+        public SchemeRouteOptions()
         {
-            Operators = new ExpressionOperatorReferencesBuilder(this);
+            Operators = new OperatorReferencesBuilder(this);
             AdditionalOperators = new List<string>();
             IncludeDefaultOperators = true;
         }
@@ -22,7 +22,7 @@ namespace PS.Query
 
         public bool IncludeDefaultOperators { get; set; }
 
-        public ExpressionOperatorReferencesBuilder Operators { get; }
+        public OperatorReferencesBuilder Operators { get; }
 
         #endregion
     }

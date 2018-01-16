@@ -4,14 +4,14 @@ using PS.Navigation;
 
 namespace PS.Query
 {
-    public class ExpressionSchemeRoute
+    public class SchemeRoute
     {
         #region Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="T:System.Object" /> class.
         /// </summary>
-        public ExpressionSchemeRoute(Route route, Type type, ExpressionSchemeRouteOptions options, MemberExpression accessor)
+        public SchemeRoute(Route route, Type type, SchemeRouteOptions options, MemberExpression accessor)
         {
             if (route == null) throw new ArgumentNullException(nameof(route));
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -28,7 +28,7 @@ namespace PS.Query
         #region Properties
 
         public MemberExpression Accessor { get; }
-        public ExpressionSchemeRouteOptions Options { get; }
+        public SchemeRouteOptions Options { get; }
         public Route Route { get; }
         public Type Type { get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace PS.Query.Json
 {
-    public class JsonToken
+    class JsonToken
     {
         #region Constructors
 

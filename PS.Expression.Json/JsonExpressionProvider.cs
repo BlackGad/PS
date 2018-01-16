@@ -2,6 +2,7 @@
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using PS.Navigation;
+using PS.Parser;
 using PS.Query.Logic;
 using PS.Query.Model;
 using LogicalExpression = PS.Query.Model.LogicalExpression;
@@ -44,12 +45,11 @@ namespace PS.Query.Json
 
         public LogicalExpression Provide()
         {
-            var ctx = new ParseContext(_tokens);
+            var ctx = ParseContext<JsonToken>.Parse(_tokens);
 
             ctx.Sequence("EXPRESSION_CONDITION eos")
                .Assert(EXPRESSION_CONDITION)
                .Assert((t, env) => t.Type == TokenType.EOS);
-
             if (ctx.FailedBranch != null) throw ctx.FailedBranch.Error;
             if (ctx.SuccessBranch != null) return ctx.SuccessBranch.Environment.Get<LogicalExpression>();
             throw new InvalidOperationException();
@@ -59,7 +59,7 @@ namespace PS.Query.Json
 
         #region Members
 
-        protected bool AggregateContextRoute(JsonToken t, ParseEnvironment env)
+        internal bool AggregateContextRoute(JsonToken t, ParseEnvironment env)
         {
             if (t.Type != TokenType.Object) return false;
             var contextRoute = env.Get<RouteExpression>();
@@ -68,20 +68,20 @@ namespace PS.Query.Json
             return true;
         }
 
-        protected bool CheckToken(JsonToken t, TokenType type, Action action)
+        internal bool CheckToken(JsonToken t, TokenType type, Action action)
         {
             if (t.Type != type) return false;
             action();
             return true;
         }
 
-        protected void CommitContextRoute(ParseEnvironment env)
+        internal void CommitContextRoute(ParseEnvironment env)
         {
             var routeList = env.Get<RouteExpression[]>();
             env.Set(routeList.Union(new[] { env.Pop<RouteExpression>() }).ToArray());
         }
 
-        protected void RestoreContextRoute(ParseEnvironment env)
+        internal void RestoreContextRoute(ParseEnvironment env)
         {
             var snapshot = (Tuple<RouteExpression[], RouteExpression>)env[env.Id];
             ((ComplexRouteExpression)snapshot.Item2).Sub = env.Get<LogicalExpression>();
@@ -91,12 +91,12 @@ namespace PS.Query.Json
             env[env.Id] = null;
         }
 
-        protected void SaveContextRoute(ParseEnvironment env)
+        internal void SaveContextRoute(ParseEnvironment env)
         {
             env[env.Id] = new Tuple<RouteExpression[], RouteExpression>(env.Pop<RouteExpression[]>(), env.Pop<RouteExpression>());
         }
 
-        private void EXPRESSION(ParseContext ctx)
+        private void EXPRESSION(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("object(route) ROUTE_LIST OPERATION")
                .Assert("(M)Create route", env => env.Set(new RouteExpression()))
@@ -131,7 +131,7 @@ namespace PS.Query.Json
                .Assert("(M)Commit route", CommitContextRoute);
         }
 
-        private void EXPRESSION_CONDITION(ParseContext ctx)
+        private void EXPRESSION_CONDITION(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("and EXPRESSION_CONDITION_BODY")
                .Assert((t, env) => t.Type == TokenType.And)
@@ -148,7 +148,7 @@ namespace PS.Query.Json
                .Assert("(M)Commit AND expression", env => env.Set(new LogicalExpression(LogicalOperator.And, env.Get<RouteExpression[]>())));
         }
 
-        private void EXPRESSION_CONDITION_BODY(ParseContext ctx)
+        private void EXPRESSION_CONDITION_BODY(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("ArrayStart EXPRESSION_LIST ArrayEnd")
                .Assert((t, env) => t.Type == TokenType.ArrayStart)
@@ -157,7 +157,7 @@ namespace PS.Query.Json
                .Assert((t, env) => t.Type == TokenType.ArrayEnd);
         }
 
-        private void EXPRESSION_LIST(ParseContext ctx)
+        private void EXPRESSION_LIST(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("EXPRESSION EXPRESSION_LIST")
                .Assert(EXPRESSION)
@@ -167,7 +167,7 @@ namespace PS.Query.Json
                .Assert();
         }
 
-        private void OPERATION(ParseContext ctx)
+        private void OPERATION(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("not operator value")
                .Assert("(M)Create operator", env => env.Set(new OperatorExpression()))
@@ -183,7 +183,7 @@ namespace PS.Query.Json
                .Assert("(M)Commit operator", env => env.Get<RouteExpression>().Operator = env.Get<OperatorExpression>());
         }
 
-        private void ROUTE_LIST(ParseContext ctx)
+        private void ROUTE_LIST(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("object(route) ROUTE_LIST")
                .Assert(AggregateContextRoute)

@@ -24,20 +24,20 @@ namespace PS.Query
 
         public ExpressionScheme()
         {
-            Operators = new ExpressionSchemeOperators();
-            Map = new ExpressionSchemeRoutes<TClass>();
-            Converters = new ExpressionSchemeConverters();
+            Operators = new SchemeOperators();
+            Map = new SchemeRoutes<TClass>();
+            Converters = new SchemeConverters();
         }
 
         #endregion
 
         #region Properties
 
-        public ExpressionSchemeConverters Converters { get; }
+        public SchemeConverters Converters { get; }
 
-        public ExpressionSchemeRoutes<TClass> Map { get; }
+        public SchemeRoutes<TClass> Map { get; }
 
-        public ExpressionSchemeOperators Operators { get; }
+        public SchemeOperators Operators { get; }
 
         #endregion
 
@@ -45,19 +45,8 @@ namespace PS.Query
 
         public Func<TClass, bool> Build(IExpressionProvider provider)
         {
-            return Build(provider.Provide());
-        }
-
-        public ExpressionOperator GetOperator(Route routePath, string name)
-        {
-            var route = Map.GetRoute(routePath);
-            if (route == null) return null;
-
-            var availableOperators = Operators.GetOperatorsForType(route.Type);
-            availableOperators = availableOperators.Where(o => route.Options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
-            if (!route.Options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
-
-            return availableOperators.FirstOrDefault(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
+            var lambda = Build(typeof(TClass), Map, provider.Provide());
+            return (Func<TClass, bool>)lambda.Compile();
         }
 
         public bool IsValidOperator(Route routePath, string name)
@@ -72,32 +61,68 @@ namespace PS.Query
             return availableOperators.Any(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private Func<TClass, bool> Build(LogicalExpression source)
+        private LambdaExpression Build(Type paramType, SchemeRoutes schemeRoutes, LogicalExpression source)
         {
-            var factorized = FactorizeExpression(source);
+            if (paramType == null) throw new ArgumentNullException(nameof(paramType));
 
-            var p = Expression.Parameter(typeof(TClass));
-            var body = Expression.Constant(true);
+            var factorized = FactorizeExpression(source);
+            var p = Expression.Parameter(paramType);
+            Expression body = null;
             foreach (var logicalExpression in factorized.Expressions.OfType<ILogicalExpression>()) //Or
             {
+                Expression intermediateResult = null;
                 foreach (var expression in logicalExpression.Expressions.OfType<RouteExpression>()) //And
                 {
                     var complexExpression = expression as ComplexRouteExpression;
                     if (complexExpression != null)
                     {
-                        if (!Map.IsValidComplexRoute(complexExpression.Route))
-                            throw new ArgumentException($"Cannot process '{complexExpression.Route}' complex route");
-                    }
-                    else
-                    {
-                        var route = Map.GetRoute(expression.Route);
-                        if (route == null)
+                        var route = schemeRoutes.GetComplexRoute(expression.Route);
+                        if (route == null) throw new ArgumentException($"Cannot process '{complexExpression.Route}' complex route");
+
+                        var complexOperator = GetComplexOperator(route, complexExpression.ComplexOperator);
+                        if (complexOperator == null)
                         {
-                            var message = $"Cannot process '{expression.Route}' route";
+                            var message = $"'{expression.Route}' complex route does not support '{complexExpression.ComplexOperator}' operator";
                             throw new ArgumentException(message);
                         }
 
-                        var @operator = GetOperator(route.Route, expression.Operator.Operator);
+                        var subExpression = Build(route.Type, route.Routes, complexExpression.Sub);
+
+                        var accessor = ParameterReplacer.Replace(p, route.Accessor);
+                        var compiledExpression = complexOperator.ExpressionFactory(accessor, subExpression);
+
+                        var operatorExpression = expression.Operator;
+                        var sourceType = compiledExpression.Type;
+
+                        if (operatorExpression != null)
+                        {
+                            var @operator = GetOperator(sourceType, route.Options, operatorExpression.Operator);
+                            if (@operator == null)
+                            {
+                                var message = $"'{expression.Route}' route does not support '{operatorExpression.Operator}' operator";
+                                throw new ArgumentException(message);
+                            }
+
+                            var stringValue = operatorExpression.Value.Trim('\"').Trim('\'');
+                            var value = Converters.Convert(stringValue, sourceType);
+                            compiledExpression = @operator.ExpressionFactory(compiledExpression, value);
+                            if (operatorExpression.Inverted) compiledExpression = Expression.Not(compiledExpression);
+                        }
+
+                        intermediateResult = intermediateResult == null
+                            ? compiledExpression
+                            : Expression.AndAlso(intermediateResult, compiledExpression);
+                    }
+                    else
+                    {
+                        var route = schemeRoutes.GetRoute(expression.Route);
+                        if (route == null)
+                        {
+                            var message = $"Unknown '{expression.Route}' route in current context";
+                            throw new ArgumentException(message);
+                        }
+
+                        var @operator = GetOperator(route.Type, route.Options, expression.Operator.Operator);
                         if (@operator == null)
                         {
                             var message = $"'{expression.Route}' route does not support '{expression.Operator.Operator}' operator";
@@ -107,62 +132,46 @@ namespace PS.Query
                         var accessor = ParameterReplacer.Replace(p, route.Accessor);
                         var stringValue = expression.Operator.Value.Trim('\"').Trim('\'');
                         var value = Converters.Convert(stringValue, route.Type);
-                        var sss = @operator.ExpressionFactory(accessor, value);
+                        Expression compiledExpression = @operator.ExpressionFactory(accessor, value);
 
-                        //System.Linq.Expressions.Expression.AndAlso()
-                        //body
+                        if (expression.Operator.Inverted) compiledExpression = Expression.Not(compiledExpression);
+
+                        intermediateResult = intermediateResult == null
+                            ? compiledExpression
+                            : Expression.AndAlso(intermediateResult, compiledExpression);
                     }
                 }
-            }
 
+                if (intermediateResult != null)
+                {
+                    body = body == null
+                        ? intermediateResult
+                        : Expression.OrElse(body, intermediateResult);
+                }
+            }
+            body = body ?? Expression.Constant(true);
             var lambda = Expression.Lambda(body, p);
-            return (Func<TClass, bool>)lambda.Compile();
+            return lambda;
         }
 
-        #endregion
-
-        #region Nested type: ParameterReplacer
-
-        class ParameterReplacer : ExpressionVisitor
+        ComplexOperator GetComplexOperator(SchemeComplexRoute route, string name)
         {
-            #region Static members
+            if (route == null) return null;
 
-            public static T Replace<T>(ParameterExpression parameter, T expression)
-                where T : Expression
-            {
-                var replacer = new ParameterReplacer(parameter);
-                return (T)replacer.Visit(expression);
-            }
+            var availableOperators = Operators.GetComplexOperators();
+            availableOperators = availableOperators.Where(o => route.Options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
+            if (!route.Options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
 
-            #endregion
+            return availableOperators.FirstOrDefault(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
+        }
 
-            private readonly ParameterExpression _expression;
+        SimpleOperator GetOperator(Type sourceType, SchemeRouteOptions options, string name)
+        {
+            var availableOperators = Operators.GetOperatorsForType(sourceType);
+            availableOperators = availableOperators.Where(o => options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
+            if (!options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
 
-            #region Constructors
-
-            private ParameterReplacer(ParameterExpression expression)
-            {
-                if (expression == null) throw new ArgumentNullException(nameof(expression));
-                _expression = expression;
-            }
-
-            #endregion
-
-            #region Override members
-
-            /// <summary>
-            ///     Visits the <see cref="T:System.Linq.Expressions.ParameterExpression" />.
-            /// </summary>
-            /// <returns>
-            ///     The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.
-            /// </returns>
-            /// <param name="node">The expression to visit.</param>
-            protected override Expression VisitParameter(ParameterExpression node)
-            {
-                return _expression;
-            }
-
-            #endregion
+            return availableOperators.FirstOrDefault(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         #endregion

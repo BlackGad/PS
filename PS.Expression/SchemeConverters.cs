@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace PS.Query
 {
-    public class ExpressionSchemeConverters
+    public class SchemeConverters
     {
         readonly Dictionary<Type, Func<string, object>> _converters;
 
         #region Constructors
 
-        public ExpressionSchemeConverters()
+        public SchemeConverters()
         {
             _converters = new Dictionary<Type, Func<string, object>>();
         }
@@ -24,7 +24,7 @@ namespace PS.Query
             return _converters[type](value);
         }
 
-        public ExpressionSchemeConverters Register<T>(Func<string, T> converter)
+        public SchemeConverters Register<T>(Func<string, T> converter)
         {
             if (converter == null) throw new ArgumentNullException(nameof(converter));
             _converters.Add(typeof(T), s => converter(s));

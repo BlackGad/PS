@@ -1,6 +1,6 @@
-﻿namespace PS.Query.Json
+﻿namespace PS.Parser
 {
-    public class AssertResultEmpty : AssertResult
+    internal class AssertResultEmpty : AssertResult
     {
         #region Properties
 
