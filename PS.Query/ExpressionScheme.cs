@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using PS.Navigation;
 using PS.Query.Logic;
 using PS.Query.Logic.Extensions;
 using PS.Query.Model;
@@ -49,16 +48,24 @@ namespace PS.Query
             return (Func<TClass, bool>)lambda.Compile();
         }
 
-        public bool IsValidOperator(Route routePath, string name)
+        internal ComplexOperator GetComplexOperator(SchemeComplexRoute route, string name)
         {
-            var route = Map.GetRoute(routePath);
-            if (route == null) return false;
+            if (route == null) return null;
 
-            var availableOperators = Operators.GetOperatorsForType(route.Type);
+            var availableOperators = Operators.GetComplexOperators();
             availableOperators = availableOperators.Where(o => route.Options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
             if (!route.Options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
 
-            return availableOperators.Any(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
+            return availableOperators.FirstOrDefault(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        internal SimpleOperator GetOperator(Type sourceType, SchemeRouteOptions options, string name)
+        {
+            var availableOperators = Operators.GetOperatorsForType(sourceType);
+            availableOperators = availableOperators.Where(o => options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
+            if (!options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
+
+            return availableOperators.FirstOrDefault(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         private LambdaExpression Build(Type paramType, SchemeRoutes schemeRoutes, LogicalExpression source)
@@ -152,26 +159,6 @@ namespace PS.Query
             body = body ?? Expression.Constant(true);
             var lambda = Expression.Lambda(body, p);
             return lambda;
-        }
-
-        ComplexOperator GetComplexOperator(SchemeComplexRoute route, string name)
-        {
-            if (route == null) return null;
-
-            var availableOperators = Operators.GetComplexOperators();
-            availableOperators = availableOperators.Where(o => route.Options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
-            if (!route.Options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
-
-            return availableOperators.FirstOrDefault(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        SimpleOperator GetOperator(Type sourceType, SchemeRouteOptions options, string name)
-        {
-            var availableOperators = Operators.GetOperatorsForType(sourceType);
-            availableOperators = availableOperators.Where(o => options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
-            if (!options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
-
-            return availableOperators.FirstOrDefault(o => string.Equals(o.Token, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         #endregion

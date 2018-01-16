@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using PS.Navigation;
 
 namespace PS.Query.Model
 {
-    public class RouteExpression
+    public class ComplexRouteExpression : RouteExpression
     {
         #region Properties
 
-        public OperatorExpression Operator { get; set; }
-        public Route Route { get; set; }
+        public string ComplexOperator { get; set; }
+        public LogicalExpression Sub { get; set; }
 
         #endregion
 
@@ -18,6 +17,8 @@ namespace PS.Query.Model
         {
             var parts = new List<string>();
             parts.Add($"{Route}");
+            if (!string.IsNullOrEmpty(ComplexOperator)) parts.Add($"{ComplexOperator}");
+            if (Sub != null) parts.Add($"SUB({Sub.Expressions?.Length ?? 0})");
             if (Operator != null) parts.Add($"{Operator}");
             return string.Join(" ", parts);
         }
