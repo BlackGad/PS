@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace PS.Query
+namespace PS.Query.Configuration
 {
-    internal class ComplexOperator : Operator
+    public class ComplexOperator : Operator
     {
         #region Properties
 

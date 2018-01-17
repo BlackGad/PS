@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PS.Query.Fluent;
+using PS.Query.Configuration;
 
 namespace PS.Query
 {
-    public class SchemeOperators
+    internal class SchemeOperators : ISchemeOperatorsBuilder,
+                                     ISchemeOperatorProvider
     {
         private readonly List<Operator> _operators;
 
@@ -18,7 +19,21 @@ namespace PS.Query
 
         #endregion
 
-        #region Members
+        #region ISchemeOperatorProvider Members
+
+        IEnumerable<ComplexOperator> ISchemeOperatorProvider.GetComplexOperators()
+        {
+            return _operators.OfType<ComplexOperator>();
+        }
+
+        IEnumerable<SimpleOperator> ISchemeOperatorProvider.GetOperatorsForType(Type type)
+        {
+            return _operators.OfType<SimpleOperator>().Where(o => type == o.SourceType);
+        }
+
+        #endregion
+
+        #region ISchemeOperatorsBuilder Members
 
         public ComplexOperatorBuilder<TResult> Complex<TResult>(string token)
         {
@@ -30,17 +45,11 @@ namespace PS.Query
             return new SimpleOperatorBuilder<TSource>(this, token);
         }
 
-        internal IEnumerable<ComplexOperator> GetComplexOperators()
-        {
-            return _operators.OfType<ComplexOperator>();
-        }
+        #endregion
 
-        internal IEnumerable<SimpleOperator> GetOperatorsForType(Type type)
-        {
-            return _operators.OfType<SimpleOperator>().Where(o => type == o.SourceType);
-        }
+        #region Members
 
-        internal SchemeOperators Register(Operator op)
+        public ISchemeOperatorsBuilder Register(Operator op)
         {
             _operators.Add(op);
             return this;

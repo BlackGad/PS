@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace PS.Query
+namespace PS.Query.Configuration
 {
-    internal abstract class Operator
+    public abstract class Operator
     {
         #region Properties
 

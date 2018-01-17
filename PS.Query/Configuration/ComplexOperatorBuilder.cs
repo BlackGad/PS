@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Linq.Expressions;
 
-namespace PS.Query.Fluent
+namespace PS.Query.Configuration
 {
     public abstract class ComplexOperatorBuilder
     {
         #region Constructors
 
-        protected ComplexOperatorBuilder(SchemeOperators schemeOperators, Type resultType, string token)
+        protected ComplexOperatorBuilder(ISchemeOperatorsBuilder schemeOperators, Type resultType, string token)
         {
             if (schemeOperators == null) throw new ArgumentNullException(nameof(schemeOperators));
             if (resultType == null) throw new ArgumentNullException(nameof(resultType));
@@ -27,7 +27,7 @@ namespace PS.Query.Fluent
 
         protected Type ResultType { get; }
 
-        protected SchemeOperators SchemeOperators { get; }
+        protected ISchemeOperatorsBuilder SchemeOperators { get; }
 
         protected string Token { get; }
 
@@ -38,7 +38,7 @@ namespace PS.Query.Fluent
     {
         #region Constructors
 
-        public ComplexOperatorBuilder(SchemeOperators schemeOperators, string token) :
+        public ComplexOperatorBuilder(ISchemeOperatorsBuilder schemeOperators, string token) :
             base(schemeOperators, typeof(TResult), token)
         {
         }
@@ -54,7 +54,7 @@ namespace PS.Query.Fluent
             return this;
         }
 
-        public SchemeOperators Register(Func<Expression, LambdaExpression, Expression> factory)
+        public ISchemeOperatorsBuilder Register(Func<Expression, LambdaExpression, Expression> factory)
         {
             SchemeOperators.Register(new ComplexOperator
             {

@@ -7,68 +7,37 @@ using PS.Navigation.Extensions;
 
 namespace PS.Query
 {
-    public abstract class SchemeRoutes
+    internal class SchemeRoutes<TClass> : ISchemeRoutesProvider,
+                                          ISchemeRoutesBuilder<TClass>
     {
         #region Constructors
 
-        protected SchemeRoutes()
+        public SchemeRoutes()
         {
             Routes = new Dictionary<Route, SchemeRoute>();
-            ComplexRoutes = new Dictionary<Route, SchemeComplexRoute>();
         }
 
         #endregion
 
         #region Properties
 
-        protected Dictionary<Route, SchemeComplexRoute> ComplexRoutes { get; }
-
         protected Dictionary<Route, SchemeRoute> Routes { get; }
 
         #endregion
 
-        #region Members
+        #region ISchemeRoutesBuilder<TClass> Members
 
-        public SchemeComplexRoute GetComplexRoute(Route route)
-        {
-            return ComplexRoutes.Where(p => p.Key.AreEqual(route, RouteCaseMode.Insensitive)).
-                                 Select(p => p.Value).FirstOrDefault();
-            ;
-        }
-
-        public SchemeRoute GetRoute(Route route)
-        {
-            return Routes.Where(p => p.Key.AreEqual(route, RouteCaseMode.Insensitive)).Select(p => p.Value).FirstOrDefault();
-        }
-
-        public bool IsValidComplexRoute(Route route)
-        {
-            return ComplexRoutes.Keys.Any(r => r.StartWith(route, RouteCaseMode.Insensitive));
-        }
-
-        public bool IsValidRoute(Route route)
-        {
-            return Routes.Keys.Any(r => r.StartWith(route, RouteCaseMode.Insensitive));
-        }
-
-        #endregion
-    }
-
-    public class SchemeRoutes<TClass> : SchemeRoutes
-    {
-        #region Members
-
-        public SchemeRoutes<TResult> Complex<TResult>(Expression<Func<TClass, IEnumerable<TResult>>> accessor,
-                                                      Action<SchemeRouteOptions> options = null)
+        public ISchemeRoutesBuilder<TResult> Complex<TResult>(Expression<Func<TClass, IEnumerable<TResult>>> accessor,
+                                                              Action<SchemeRouteOptions> options = null)
         {
             var expressionBody = accessor?.Body as MemberExpression;
             var route = ExtractRoute(expressionBody);
             return Complex(route, accessor, options);
         }
 
-        public SchemeRoutes<TResult> Complex<TResult>(Route route,
-                                                      Expression<Func<TClass, IEnumerable<TResult>>> accessor,
-                                                      Action<SchemeRouteOptions> options = null)
+        public ISchemeRoutesBuilder<TResult> Complex<TResult>(Route route,
+                                                              Expression<Func<TClass, IEnumerable<TResult>>> accessor,
+                                                              Action<SchemeRouteOptions> options = null)
         {
             if (Routes.ContainsKey(route)) throw new ArgumentException($"{route} route already declared");
             var memberAccessExpression = accessor?.Body as MemberExpression;
@@ -79,27 +48,27 @@ namespace PS.Query
 
             var result = new SchemeRoutes<TResult>();
 
-            var complexRoute = new SchemeComplexRoute(route,
+            var complexRoute = new SchemeRouteComplex(route,
                                                       typeof(TResult),
                                                       optionInstance,
                                                       memberAccessExpression,
                                                       result);
-            ComplexRoutes.Add(route, complexRoute);
+            Routes.Add(route, complexRoute);
 
             return result;
         }
 
-        public SchemeRoutes<TClass> Route<TResult>(Expression<Func<TClass, TResult>> accessor,
-                                                   Action<SchemeRouteOptions> options = null)
+        public ISchemeRoutesBuilder<TClass> Route<TResult>(Expression<Func<TClass, TResult>> accessor,
+                                                           Action<SchemeRouteOptions> options = null)
         {
             var expressionBody = accessor?.Body as MemberExpression;
             var route = ExtractRoute(expressionBody);
             return Route(route, accessor, options);
         }
 
-        public SchemeRoutes<TClass> Route<TResult>(Route route,
-                                                   Expression<Func<TClass, TResult>> accessor,
-                                                   Action<SchemeRouteOptions> options = null)
+        public ISchemeRoutesBuilder<TClass> Route<TResult>(Route route,
+                                                           Expression<Func<TClass, TResult>> accessor,
+                                                           Action<SchemeRouteOptions> options = null)
         {
             if (Routes.ContainsKey(route)) throw new ArgumentException($"{route} route already declared");
             var memberAccessExpression = accessor?.Body as MemberExpression;
@@ -112,6 +81,31 @@ namespace PS.Query
 
             return this;
         }
+
+        #endregion
+
+        #region ISchemeRoutesProvider Members
+
+        public SchemeRouteComplex GetComplexRoute(Route route)
+        {
+            return Routes.Where(p => p.Key.AreEqual(route, RouteCaseMode.Insensitive) &&
+                                     p.Value.GetType() == typeof(SchemeRouteComplex))
+                         .Select(p => p.Value)
+                         .OfType<SchemeRouteComplex>()
+                         .FirstOrDefault();
+        }
+
+        public SchemeRoute GetRoute(Route route)
+        {
+            return Routes.Where(p => p.Key.AreEqual(route, RouteCaseMode.Insensitive) &&
+                                     p.Value.GetType() == typeof(SchemeRoute))
+                         .Select(p => p.Value)
+                         .FirstOrDefault();
+        }
+
+        #endregion
+
+        #region Members
 
         private Route ExtractRoute(MemberExpression expressionBody)
         {

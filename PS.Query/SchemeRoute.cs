@@ -4,7 +4,7 @@ using PS.Navigation;
 
 namespace PS.Query
 {
-    public class SchemeRoute
+    internal class SchemeRoute
     {
         #region Constructors
 

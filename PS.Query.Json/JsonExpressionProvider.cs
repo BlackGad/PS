@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using PS.Data.Logic;
 using PS.Navigation;
 using PS.Parser;
-using PS.Query.Logic;
 using PS.Query.Model;
 using LogicalExpression = PS.Query.Model.LogicalExpression;
 
@@ -85,7 +85,7 @@ namespace PS.Query.Json
         internal void RestoreContextRoute(ParseEnvironment env)
         {
             var snapshot = (Tuple<RouteExpression[], RouteExpression>)env[env.Id];
-            ((ComplexRouteExpression)snapshot.Item2).Sub = env.Get<LogicalExpression>();
+            ((RouteExpressionComplex)snapshot.Item2).Sub = env.Get<LogicalExpression>();
 
             env.Set(snapshot.Item1);
             env.Set(snapshot.Item2);
@@ -107,24 +107,24 @@ namespace PS.Query.Json
                .Assert("Commit route", CommitContextRoute);
 
             ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION")
-               .Assert("Create route", env => env.Set<RouteExpression>(new ComplexRouteExpression()))
+               .Assert("Create route", env => env.Set<RouteExpression>(new RouteExpressionComplex()))
                .Assert(AggregateContextRoute)
                .Assert(ROUTE_LIST)
                .Assert((token, env) => CheckToken(token,
                                                   TokenType.Operator,
-                                                  () => ((ComplexRouteExpression)env.Get<RouteExpression>()).ComplexOperator = token.Value))
+                                                  () => ((RouteExpressionComplex)env.Get<RouteExpression>()).ComplexOperator = token.Value))
                .Assert("Push route", SaveContextRoute)
                .Assert(EXPRESSION_CONDITION)
                .Assert("Pop route", RestoreContextRoute)
                .Assert("Commit route", CommitContextRoute);
 
             ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION OPERATION")
-               .Assert("Create route", env => env.Set<RouteExpression>(new ComplexRouteExpression()))
+               .Assert("Create route", env => env.Set<RouteExpression>(new RouteExpressionComplex()))
                .Assert(AggregateContextRoute)
                .Assert(ROUTE_LIST)
                .Assert((token, env) => CheckToken(token,
                                                   TokenType.Operator,
-                                                  () => ((ComplexRouteExpression)env.Get<RouteExpression>()).ComplexOperator = token.Value))
+                                                  () => ((RouteExpressionComplex)env.Get<RouteExpression>()).ComplexOperator = token.Value))
                .Assert("Save route", SaveContextRoute)
                .Assert(EXPRESSION_CONDITION)
                .Assert("Pop route", RestoreContextRoute)
@@ -173,13 +173,13 @@ namespace PS.Query.Json
             ctx.Sequence("not operator value")
                .Assert("Create operator", env => env.Set(new OperatorExpression()))
                .Assert((t, env) => CheckToken(t, TokenType.Not, () => env.Get<OperatorExpression>().Inverted = true))
-               .Assert((t, env) => CheckToken(t, TokenType.Operator, () => env.Get<OperatorExpression>().Operator = t.Value))
+               .Assert((t, env) => CheckToken(t, TokenType.Operator, () => env.Get<OperatorExpression>().Name = t.Value))
                .Assert((t, env) => CheckToken(t, TokenType.Value, () => env.Get<OperatorExpression>().Value = t.Value))
                .Assert("Commit operator", env => env.Get<RouteExpression>().Operator = env.Get<OperatorExpression>());
 
             ctx.Sequence("operator value")
                .Assert("Create operator", env => env.Set(new OperatorExpression()))
-               .Assert((t, env) => CheckToken(t, TokenType.Operator, () => env.Get<OperatorExpression>().Operator = t.Value))
+               .Assert((t, env) => CheckToken(t, TokenType.Operator, () => env.Get<OperatorExpression>().Name = t.Value))
                .Assert((t, env) => CheckToken(t, TokenType.Value, () => env.Get<OperatorExpression>().Value = t.Value))
                .Assert("Commit operator", env => env.Get<RouteExpression>().Operator = env.Get<OperatorExpression>());
         }

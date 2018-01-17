@@ -43,9 +43,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\DisposableDelegate.cs" />
+    <Compile Include="Data\Logic\Extensions\MathExtensions.cs" />
+    <Compile Include="Data\Logic\FactorizeParams.cs" />
+    <Compile Include="Data\Logic\IInvertedLogicalExpression.cs" />
+    <Compile Include="Data\Logic\ILogicalExpression.cs" />
+    <Compile Include="Data\Logic\InvertedLogicalExpression.cs" />
+    <Compile Include="Data\Logic\LogicalExpression.cs" />
+    <Compile Include="Data\Logic\LogicalOperator.cs" />
     <Compile Include="Extensions\PathExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Linq\Expressions\Extensions\ExpressionExtensions.cs" />
+    <Compile Include="Linq\Expressions\ParameterReplacer.cs" />
     <Compile Include="Navigation\RouteRecursiveSplit.cs" />
     <Compile Include="Navigation\RouteCaseMode.cs" />
     <Compile Include="Navigation\RouteToken.cs" />
@@ -61,7 +69,6 @@
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
-    <Compile Include="IFreezable.cs" />
     <Compile Include="Navigation\Extensions\RouteExtensions.cs" />
     <Compile Include="Navigation\Route.cs" />
     <Compile Include="Navigation\RouteFormatting.cs" />

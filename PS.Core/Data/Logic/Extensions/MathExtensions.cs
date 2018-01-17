@@ -2,7 +2,7 @@
 using System.Linq;
 using PS.Extensions;
 
-namespace PS.Query.Logic.Extensions
+namespace PS.Data.Logic.Extensions
 {
     public static class MathExtensions
     {

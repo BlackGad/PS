@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PS.Query.Fluent
+namespace PS.Query.Configuration
 {
     public class OperatorReferencesBuilder
     {

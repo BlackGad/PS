@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PS.Query.Logic
+namespace PS.Data.Logic
 {
     public class FactorizeParams
     {

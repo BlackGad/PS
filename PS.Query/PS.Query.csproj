@@ -40,30 +40,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComplexOperator.cs" />
-    <Compile Include="Fluent\ComplexOperatorBuilder.cs" />
-    <Compile Include="Model\ComplexRouteExpression.cs" />
+    <Compile Include="Configuration\ComplexOperator.cs" />
+    <Compile Include="Configuration\ComplexOperatorBuilder.cs" />
+    <Compile Include="ExpressionBuilder.cs" />
+    <Compile Include="IExpressionSchemeBuilder.cs" />
+    <Compile Include="IExpressionSchemeProvider.cs" />
+    <Compile Include="ISchemeConverterBuilder.cs" />
+    <Compile Include="ISchemeConverterProvider.cs" />
+    <Compile Include="ISchemeOperatorProvider.cs" />
+    <Compile Include="ISchemeOperatorsBuilder.cs" />
+    <Compile Include="ISchemeRoutesBuilder.cs" />
+    <Compile Include="ISchemeRoutesProvider.cs" />
+    <Compile Include="Model\RouteExpressionComplex.cs" />
     <Compile Include="Model\OperatorExpression.cs" />
-    <Compile Include="Operator.cs" />
-    <Compile Include="ParameterReplacer.cs" />
-    <Compile Include="SchemeComplexRoute.cs" />
+    <Compile Include="Configuration\Operator.cs" />
+    <Compile Include="SchemeRouteComplex.cs" />
     <Compile Include="SchemeConverters.cs" />
-    <Compile Include="Logic\LogicalExpression.cs" />
-    <Compile Include="Logic\Extensions\MathExtensions.cs" />
-    <Compile Include="Logic\FactorizeParams.cs" />
-    <Compile Include="Logic\ILogicalExpression.cs" />
-    <Compile Include="Logic\IInvertedLogicalExpression.cs" />
-    <Compile Include="Logic\InvertedLogicalExpression.cs" />
-    <Compile Include="Logic\LogicalOperator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleOperator.cs" />
+    <Compile Include="Configuration\SimpleOperator.cs" />
     <Compile Include="SchemeRouteOptions.cs" />
     <Compile Include="ExpressionScheme.cs" />
     <Compile Include="SchemeOperators.cs" />
     <Compile Include="SchemeRoute.cs" />
     <Compile Include="SchemeRoutes.cs" />
-    <Compile Include="Fluent\SimpleOperatorBuilder.cs" />
-    <Compile Include="Fluent\OperatorReferencesBuilder.cs" />
+    <Compile Include="Configuration\SimpleOperatorBuilder.cs" />
+    <Compile Include="Configuration\OperatorReferencesBuilder.cs" />
     <Compile Include="IExpressionProvider.cs" />
     <Compile Include="Model\LogicalExpression.cs" />
     <Compile Include="Model\RouteExpression.cs" />
@@ -74,7 +75,9 @@
       <Name>PS.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Data\Expression\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

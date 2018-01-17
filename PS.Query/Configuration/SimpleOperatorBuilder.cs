@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace PS.Query.Fluent
+namespace PS.Query.Configuration
 {
     public abstract class SimpleOperatorBuilder
     {
         #region Constructors
 
-        protected SimpleOperatorBuilder(SchemeOperators schemeOperators, Type sourceType, string token)
+        protected SimpleOperatorBuilder(ISchemeOperatorsBuilder schemeOperators, Type sourceType, string token)
         {
             if (schemeOperators == null) throw new ArgumentNullException(nameof(schemeOperators));
             if (sourceType == null) throw new ArgumentNullException(nameof(sourceType));
@@ -24,7 +24,7 @@ namespace PS.Query.Fluent
 
         protected string OperatorKey { get; set; }
 
-        protected SchemeOperators SchemeOperators { get; }
+        protected ISchemeOperatorsBuilder SchemeOperators { get; }
 
         protected Type SourceType { get; }
 
@@ -37,7 +37,7 @@ namespace PS.Query.Fluent
     {
         #region Constructors
 
-        public SimpleOperatorBuilder(SchemeOperators schemeOperators, string token) :
+        public SimpleOperatorBuilder(ISchemeOperatorsBuilder schemeOperators, string token) :
             base(schemeOperators, typeof(TSource), token)
         {
         }
@@ -53,7 +53,7 @@ namespace PS.Query.Fluent
             return this;
         }
 
-        public SchemeOperators Register(Func<Expression, TSource, BinaryExpression> factory)
+        public ISchemeOperatorsBuilder Register(Func<Expression, TSource, BinaryExpression> factory)
         {
             SchemeOperators.Register(new SimpleOperator
             {

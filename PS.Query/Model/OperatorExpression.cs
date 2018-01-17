@@ -7,7 +7,7 @@ namespace PS.Query.Model
         #region Properties
 
         public bool Inverted { get; set; }
-        public string Operator { get; set; }
+        public string Name { get; set; }
         public string Value { get; set; }
 
         #endregion
@@ -19,7 +19,7 @@ namespace PS.Query.Model
             var parts = new List<string>();
 
             if (Inverted) parts.Add("NOT");
-            if (!string.IsNullOrEmpty(Operator)) parts.Add($"{Operator}");
+            if (!string.IsNullOrEmpty(Name)) parts.Add($"{Name}");
             if (!string.IsNullOrEmpty(Value)) parts.Add($"{Value}");
             return string.Join(" ", parts);
         }

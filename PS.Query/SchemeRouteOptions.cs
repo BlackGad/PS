@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using PS.Query.Fluent;
+using PS.Query.Configuration;
 
 namespace PS.Query
 {

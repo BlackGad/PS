@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using PS.Query.Logic;
+using PS.Data.Logic;
 
 namespace PS.Query.Model
 {

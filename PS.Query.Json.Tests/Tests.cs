@@ -14,6 +14,8 @@ namespace PS.Query.Json.Tests
     [TestFixture]
     public class Tests
     {
+        #region Test Parser
+
         //private static MethodInfo GetStringComparisonMethod(string methodName)
         //{
         //    var method = typeof(string).GetMethod("Contains");
@@ -35,7 +37,7 @@ namespace PS.Query.Json.Tests
         [Test]
         public void Parser()
         {
-            var scheme = new ExpressionScheme<License>();
+            var scheme = ExpressionScheme.Create<License>();
             scheme.Converters
                   .Register(Guid.Parse)
                   .Register(int.Parse)
@@ -71,16 +73,14 @@ namespace PS.Query.Json.Tests
                   .Complex<bool>("any").Register((src, sub) =>
                   {
                       var genericAnyMethod = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
-                                                                 .FirstOrDefault(m => m.Name == nameof(Enumerable.Any) &&
-                                                                                      m.GetParameters().Length == 2);
+                                                               .FirstOrDefault(m => m.Name == nameof(Enumerable.Any) &&
+                                                                                    m.GetParameters().Length == 2);
                       if (genericAnyMethod == null) throw new InvalidOperationException();
 
                       var sourceType = src.Type;
                       var itemsType = sourceType.IsGenericType ? sourceType.GetGenericArguments()[0] : typeof(object);
 
                       var anyMethod = genericAnyMethod.MakeGenericMethod(itemsType);
-
-                    
 
                       Expression anyCall = Expression.Call(anyMethod, src, sub);
                       return anyCall;
@@ -102,7 +102,7 @@ namespace PS.Query.Json.Tests
                       return result;
                   });
 
-            scheme.Map
+            scheme.Routes
                   .Route(src => src.Id)
                   .Route(src => src.Template.Id)
                   .Route(src => src.Template.Name,
@@ -111,7 +111,7 @@ namespace PS.Query.Json.Tests
                                    .Include("custom"))
                   .Route(src => src.Template.Description);
 
-            scheme.Map.Complex(src => src.Claims)
+            scheme.Routes.Complex(src => src.Claims)
                   .Route(src => src.Id)
                   .Route(src => src.Type)
                   .Route(src => src.Name);
@@ -121,6 +121,9 @@ namespace PS.Query.Json.Tests
             var provider = new JsonExpressionProvider(jToken);
             var licenses = ModelBuilder.CreateModel();
             var queryLicenses = licenses.Where(scheme.Build(provider)).ToList();
+            //PS.Query.Configuration.
         }
+
+        #endregion
     }
 }

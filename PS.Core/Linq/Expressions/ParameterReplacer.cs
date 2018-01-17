@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace PS.Query
+namespace PS.Linq.Expressions
 {
     public class ParameterReplacer : ExpressionVisitor
     {

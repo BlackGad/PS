@@ -1,4 +1,4 @@
-﻿namespace PS.Query.Logic
+﻿namespace PS.Data.Logic
 {
     public interface IInvertedLogicalExpression
     {

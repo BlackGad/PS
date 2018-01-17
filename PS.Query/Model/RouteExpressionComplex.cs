@@ -2,7 +2,7 @@
 
 namespace PS.Query.Model
 {
-    public class ComplexRouteExpression : RouteExpression
+    public class RouteExpressionComplex : RouteExpression
     {
         #region Properties
 
