@@ -6,6 +6,8 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using PS.Query.Data.Predicate;
+using PS.Query.Data.Predicate.Extensions;
 using PS.Query.Tests.TestReferences.ExpressionBuilderTests;
 using PS.Query.Tests.TestReferences.ExpressionBuilderTests.Model;
 
@@ -37,12 +39,7 @@ namespace PS.Query.Json.Tests
         [Test]
         public void Parser()
         {
-            var scheme = ExpressionScheme.Create<License>();
-            scheme.Converters
-                  .Register(Guid.Parse)
-                  .Register(int.Parse)
-                  .Register(s => s);
-
+            var scheme = Scheme.Create<License>();
             scheme.Operators
                   .Simple<Guid>("equal").Register((src, value) => Expression.Equal(src, Expression.Constant(value)))
                   .Simple<string>("equal").Register((src, value) => Expression.Equal(src, Expression.Constant(value)))
@@ -118,10 +115,10 @@ namespace PS.Query.Json.Tests
 
             var json = File.ReadAllText(@"D:\GitHub\PS\PS.Query.Json.Tests\TextFile1.txt");
             var jToken = (JToken)JsonConvert.DeserializeObject(json);
-            var provider = new JsonExpressionProvider(jToken);
+            var provider = new JsonPredicateModelProvider(jToken);
             var licenses = ModelBuilder.CreateModel();
             var queryLicenses = licenses.Where(scheme.Build(provider)).ToList();
-            //PS.Query.Configuration.
+            
         }
 
         #endregion

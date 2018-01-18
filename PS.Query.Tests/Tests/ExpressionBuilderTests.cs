@@ -8,7 +8,7 @@ namespace PS.Query.Tests.Tests
         //[Test]
         //public void Test()
         //{
-        //    var scheme = new ExpressionScheme<License>();
+        //    var scheme = new Scheme<License>();
 
         //    scheme.Operators
         //          .Simple<Guid>("equals").Register( /*factory*/)

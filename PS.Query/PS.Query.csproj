@@ -40,34 +40,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\ComplexOperator.cs" />
-    <Compile Include="Configuration\ComplexOperatorBuilder.cs" />
-    <Compile Include="ExpressionBuilder.cs" />
-    <Compile Include="IExpressionSchemeBuilder.cs" />
-    <Compile Include="IExpressionSchemeProvider.cs" />
-    <Compile Include="ISchemeConverterBuilder.cs" />
-    <Compile Include="ISchemeConverterProvider.cs" />
-    <Compile Include="ISchemeOperatorProvider.cs" />
-    <Compile Include="ISchemeOperatorsBuilder.cs" />
-    <Compile Include="ISchemeRoutesBuilder.cs" />
-    <Compile Include="ISchemeRoutesProvider.cs" />
-    <Compile Include="Model\RouteExpressionComplex.cs" />
-    <Compile Include="Model\OperatorExpression.cs" />
-    <Compile Include="Configuration\Operator.cs" />
-    <Compile Include="SchemeRouteComplex.cs" />
-    <Compile Include="SchemeConverters.cs" />
+    <Compile Include="Data\Predicate\Default\Converters.cs" />
+    <Compile Include="Data\Predicate\Default\Operators.cs" />
+    <Compile Include="Data\Predicate\Extensions\PredicateConvertersExtensions.cs" />
+    <Compile Include="Data\Predicate\Extensions\PredicateRoutesExtensions.cs" />
+    <Compile Include="Data\Predicate\Model\ComplexOperator.cs" />
+    <Compile Include="Data\Predicate\Model\ComplexOperatorBuilder.cs" />
+    <Compile Include="Data\Predicate\ExpressionBuilder\PredicateExpressionBuilder.cs" />
+    <Compile Include="Data\Predicate\IScheme.cs" />
+    <Compile Include="Data\Predicate\ExpressionBuilder\IPredicateSchemeProvider.cs" />
+    <Compile Include="Data\Predicate\IPredicateConverters.cs" />
+    <Compile Include="Data\Predicate\ExpressionBuilder\IPredicateConvertersProvider.cs" />
+    <Compile Include="Data\Predicate\ExpressionBuilder\IPredicateOperatorsProvider.cs" />
+    <Compile Include="Data\Predicate\IPredicateOperators.cs" />
+    <Compile Include="Data\Predicate\IPredicateRoutes.cs" />
+    <Compile Include="Data\Predicate\ExpressionBuilder\IPredicateRoutesProvider.cs" />
+    <Compile Include="Data\Predicate\Logic\RouteExpressionComplex.cs" />
+    <Compile Include="Data\Predicate\Logic\OperatorExpression.cs" />
+    <Compile Include="Data\Predicate\Model\Operator.cs" />
+    <Compile Include="Data\Predicate\PredicateBatchConverter.cs" />
+    <Compile Include="Data\Predicate\PredicateRouteComplex.cs" />
+    <Compile Include="Data\Predicate\PredicateConverters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Configuration\SimpleOperator.cs" />
-    <Compile Include="SchemeRouteOptions.cs" />
-    <Compile Include="ExpressionScheme.cs" />
-    <Compile Include="SchemeOperators.cs" />
-    <Compile Include="SchemeRoute.cs" />
-    <Compile Include="SchemeRoutes.cs" />
-    <Compile Include="Configuration\SimpleOperatorBuilder.cs" />
-    <Compile Include="Configuration\OperatorReferencesBuilder.cs" />
-    <Compile Include="IExpressionProvider.cs" />
-    <Compile Include="Model\LogicalExpression.cs" />
-    <Compile Include="Model\RouteExpression.cs" />
+    <Compile Include="Data\Predicate\Model\SimpleOperator.cs" />
+    <Compile Include="Data\Predicate\PredicateRouteOptions.cs" />
+    <Compile Include="Data\Predicate\Scheme.cs" />
+    <Compile Include="Data\Predicate\PredicateOperators.cs" />
+    <Compile Include="Data\Predicate\PredicateRoute.cs" />
+    <Compile Include="Data\Predicate\PredicateRoutes.cs" />
+    <Compile Include="Data\Predicate\Model\SimpleOperatorBuilder.cs" />
+    <Compile Include="Data\Predicate\Model\OperatorReferencesBuilder.cs" />
+    <Compile Include="Data\Predicate\IPredicateModelProvider.cs" />
+    <Compile Include="Data\Predicate\Logic\LogicalExpression.cs" />
+    <Compile Include="Data\Predicate\Logic\RouteExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PS.Core\PS.Core.csproj">
@@ -75,9 +80,7 @@
       <Name>PS.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Expression\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
