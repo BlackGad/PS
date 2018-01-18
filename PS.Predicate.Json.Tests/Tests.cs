@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -35,7 +36,17 @@ namespace PS.Predicate.Json.Tests
             var jToken = (JToken)JsonConvert.DeserializeObject(json);
             var provider = new JsonPredicateModelProvider(jToken);
             var licenses = ModelBuilder.CreateModel();
-            var queryLicenses = licenses.Where(scheme.Build(provider)).ToList();
+            var expression = provider.Provide();
+            var serializer = new XmlSerializer(expression.GetType());
+            
+
+            using (StringWriter textWriter = new StringWriter())
+            {
+                serializer.Serialize(textWriter, expression);
+                var str = textWriter.ToString();
+            }
+
+            var queryLicenses = licenses.Where(scheme.Build(expression)).ToList();
         }
 
         #endregion

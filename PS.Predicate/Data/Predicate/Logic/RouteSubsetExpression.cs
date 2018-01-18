@@ -6,8 +6,8 @@ namespace PS.Data.Predicate.Logic
     {
         #region Properties
 
-        public string SubsetOperator { get; set; }
-        public LogicalExpression Sub { get; set; }
+        public string Query { get; set; }
+        public IExpression Subset { get; set; }
 
         #endregion
 
@@ -17,8 +17,8 @@ namespace PS.Data.Predicate.Logic
         {
             var parts = new List<string>();
             parts.Add($"{Route}");
-            if (!string.IsNullOrEmpty(SubsetOperator)) parts.Add($"{SubsetOperator}");
-            if (Sub != null) parts.Add($"SUB({Sub.Expressions?.Length ?? 0})");
+            if (!string.IsNullOrEmpty(Query)) parts.Add($"{Query}");
+            if (Subset != null) parts.Add($"{{{Subset}}})");
             if (Operator != null) parts.Add($"{Operator}");
             return string.Join(" ", parts);
         }

@@ -1,5 +1,6 @@
 using System;
 using PS.Data.Predicate.ExpressionBuilder;
+using PS.Data.Predicate.Logic;
 
 namespace PS.Data.Predicate
 {
@@ -51,9 +52,9 @@ namespace PS.Data.Predicate
             get { return _routes; }
         }
 
-        public Func<TClass, bool> Build(IPredicateModelProvider provider)
+        public Func<TClass, bool> Build(IExpression expression)
         {
-            return PredicateExpressionBuilder.Build<TClass>(this, provider);
+            return PredicateExpressionBuilder.Build<TClass>(this, expression);
         }
 
         #endregion

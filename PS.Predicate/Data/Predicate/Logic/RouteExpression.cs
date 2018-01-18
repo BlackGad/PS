@@ -3,7 +3,7 @@ using PS.Navigation;
 
 namespace PS.Data.Predicate.Logic
 {
-    public class RouteExpression
+    public class RouteExpression : IExpression
     {
         #region Properties
 

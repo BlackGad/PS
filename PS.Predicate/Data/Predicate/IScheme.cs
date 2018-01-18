@@ -1,4 +1,5 @@
 using System;
+using PS.Data.Predicate.Logic;
 
 namespace PS.Data.Predicate
 {
@@ -16,7 +17,7 @@ namespace PS.Data.Predicate
 
         #region Members
 
-        Func<T, bool> Build(IPredicateModelProvider provider);
+        Func<T, bool> Build(IExpression expression);
 
         #endregion
     }

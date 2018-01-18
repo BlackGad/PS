@@ -1,25 +1,34 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using PS.Data.Logic;
 
 namespace PS.Data.Predicate.Logic
 {
-    public class LogicalExpression : ILogicalExpression
+    public class LogicalExpression : ILogicalExpression,
+                                     IExpression,
+                                     IXmlSerializable
     {
         #region Constructors
 
-        public LogicalExpression(LogicalOperator op, RouteExpression[] expressions)
+        public LogicalExpression(LogicalOperator op, IExpression[] expressions)
         {
             Expressions = expressions;
             Operator = op;
+        }
+
+        private LogicalExpression()
+        {
         }
 
         #endregion
 
         #region Properties
 
-        public RouteExpression[] Expressions { get; }
+        public IExpression[] Expressions { get; }
 
         #endregion
 
@@ -49,6 +58,23 @@ namespace PS.Data.Predicate.Logic
         void ILogicalExpression.RemoveExpression(object expression)
         {
             throw new NotSupportedException();
+        }
+
+        #endregion
+
+        #region IXmlSerializable Members
+
+        public XmlSchema GetSchema()
+        {
+            throw new NotSupportedException();
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
         }
 
         #endregion

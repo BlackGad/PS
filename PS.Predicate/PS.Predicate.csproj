@@ -49,6 +49,7 @@
     <Compile Include="Data\Predicate\Extensions\PredicateConvertersExtensions.cs" />
     <Compile Include="Data\Predicate\Extensions\PredicateOperatorsExtensions.cs" />
     <Compile Include="Data\Predicate\Extensions\PredicateRoutesExtensions.cs" />
+    <Compile Include="Data\Predicate\Logic\IExpression.cs" />
     <Compile Include="Data\Predicate\Model\SubsetOperator.cs" />
     <Compile Include="Data\Predicate\Model\SubsetOperatorBuilder.cs" />
     <Compile Include="Data\Predicate\ExpressionBuilder\PredicateExpressionBuilder.cs" />
@@ -75,7 +76,6 @@
     <Compile Include="Data\Predicate\PredicateRoutes.cs" />
     <Compile Include="Data\Predicate\Model\PredicateOperatorBuilder.cs" />
     <Compile Include="Data\Predicate\Model\OperatorReferencesBuilder.cs" />
-    <Compile Include="Data\Predicate\IPredicateModelProvider.cs" />
     <Compile Include="Data\Predicate\Logic\LogicalExpression.cs" />
     <Compile Include="Data\Predicate\Logic\RouteExpression.cs" />
   </ItemGroup>

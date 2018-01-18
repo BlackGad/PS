@@ -26,7 +26,7 @@ namespace PS.Data.Predicate
     ///     OPERATION -> not operator value
     ///     OPERATION -> operator value
     /// </summary>
-    public class JsonPredicateModelProvider : IPredicateModelProvider
+    public class JsonPredicateModelProvider
     {
         private readonly JsonToken[] _tokens;
 
@@ -41,7 +41,7 @@ namespace PS.Data.Predicate
 
         #endregion
 
-        #region IPredicateModelProvider Members
+        #region Members
 
         public LogicalExpression Provide()
         {
@@ -55,10 +55,6 @@ namespace PS.Data.Predicate
             if (ctx.SuccessBranch != null) return ctx.SuccessBranch.Environment.Get<LogicalExpression>();
             throw new InvalidOperationException();
         }
-
-        #endregion
-
-        #region Members
 
         internal bool AggregateContextRoute(JsonToken t, ParseEnvironment env)
         {
@@ -85,7 +81,7 @@ namespace PS.Data.Predicate
         internal void RestoreContextRoute(ParseEnvironment env)
         {
             var snapshot = (Tuple<RouteExpression[], RouteExpression>)env[env.Id];
-            ((RouteSubsetExpression)snapshot.Item2).Sub = env.Get<LogicalExpression>();
+            ((RouteSubsetExpression)snapshot.Item2).Subset = env.Get<LogicalExpression>();
 
             env.Set(snapshot.Item1);
             env.Set(snapshot.Item2);
@@ -112,7 +108,7 @@ namespace PS.Data.Predicate
                .Assert(ROUTE_LIST)
                .Assert((token, env) => CheckToken(token,
                                                   TokenType.Operator,
-                                                  () => ((RouteSubsetExpression)env.Get<RouteExpression>()).SubsetOperator = token.Value))
+                                                  () => ((RouteSubsetExpression)env.Get<RouteExpression>()).Query = token.Value))
                .Assert("Push route", SaveContextRoute)
                .Assert(EXPRESSION_CONDITION)
                .Assert("Pop route", RestoreContextRoute)
@@ -124,7 +120,7 @@ namespace PS.Data.Predicate
                .Assert(ROUTE_LIST)
                .Assert((token, env) => CheckToken(token,
                                                   TokenType.Operator,
-                                                  () => ((RouteSubsetExpression)env.Get<RouteExpression>()).SubsetOperator = token.Value))
+                                                  () => ((RouteSubsetExpression)env.Get<RouteExpression>()).Query = token.Value))
                .Assert("Save route", SaveContextRoute)
                .Assert(EXPRESSION_CONDITION)
                .Assert("Pop route", RestoreContextRoute)

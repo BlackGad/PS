@@ -1,31 +1,4 @@
-{ 
-    "and" : 
-    [	
-        { "id": { "equal": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }},
-        { "template": { "name": { "not" : {"match": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }}}},
-        {
-            "claims": 
-            {
-                "any": 
-                [
-                    { "type": { "equal": "claim type" } },
-                    { "value": { "equal": "claim value" } }
-                ]
-            }
-        },
-        { 
-            "claims":
-            { 
-                "count" : 
-                { 
-                    "or" :
-                    [
-                        { "type": { "equal": "claim type" } },
-                        { "value": { "equal": "claim value" } }
-                    ]
-                },
-                "equal": "3"
-            } 
-        }
-    ]
-}
+(id equal "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508") AND 
+(template.name NOT match "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508") AND 
+(claims any {type equal "claim type" AND value equal "claim value"}) AND
+(claims count {type equal "claim type" OR value equal "claim value"} equal "3")

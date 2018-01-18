@@ -7,7 +7,6 @@ using PS.Data.Logic.Extensions;
 using PS.Data.Predicate.Logic;
 using PS.Data.Predicate.Model;
 using PS.Linq.Expressions;
-using LogicalExpression = PS.Data.Predicate.Logic.LogicalExpression;
 
 namespace PS.Data.Predicate.ExpressionBuilder
 {
@@ -15,16 +14,16 @@ namespace PS.Data.Predicate.ExpressionBuilder
     {
         #region Static members
 
-        internal static Func<TClass, bool> Build<TClass>(IPredicateSchemeProvider scheme, IPredicateModelProvider provider)
+        internal static Func<TClass, bool> Build<TClass>(IPredicateSchemeProvider scheme, IExpression expression)
         {
-            var lambda = Build(scheme, typeof(TClass), scheme.Routes, provider.Provide());
+            var lambda = Build(scheme, typeof(TClass), scheme.Routes, expression);
             return (Func<TClass, bool>)lambda.Compile();
         }
 
         private static LambdaExpression Build(IPredicateSchemeProvider scheme,
                                               Type paramType,
                                               IPredicateRoutesProvider schemeRoutes,
-                                              LogicalExpression source)
+                                              IExpression source)
         {
             if (paramType == null) throw new ArgumentNullException(nameof(paramType));
 
@@ -42,14 +41,14 @@ namespace PS.Data.Predicate.ExpressionBuilder
                         var route = schemeRoutes.GetSubsetRoute(expression.Route);
                         if (route == null) throw new ArgumentException($"Cannot process '{routeSubsetExpression.Route}' subset route");
 
-                        var subsetOperator = GeSubsetOperator(scheme, route, routeSubsetExpression.SubsetOperator);
+                        var subsetOperator = GeSubsetOperator(scheme, route, routeSubsetExpression.Query);
                         if (subsetOperator == null)
                         {
-                            var message = $"'{expression.Route}' subset route does not support '{routeSubsetExpression.SubsetOperator}' operator";
+                            var message = $"'{expression.Route}' subset route does not support '{routeSubsetExpression.Query}' operator";
                             throw new ArgumentException(message);
                         }
 
-                        var subExpression = Build(scheme, route.Type, route.Routes, routeSubsetExpression.Sub);
+                        var subExpression = Build(scheme, route.Type, route.Routes, routeSubsetExpression.Subset);
 
                         var accessor = ParameterReplacer.Replace(p, route.Accessor);
                         var compiledExpression = subsetOperator.Expression(accessor, subExpression);
@@ -117,7 +116,7 @@ namespace PS.Data.Predicate.ExpressionBuilder
             return lambda;
         }
 
-        private static ILogicalExpression FactorizeExpression(ILogicalExpression expression)
+        private static ILogicalExpression FactorizeExpression(IExpression expression)
         {
             return expression.Factorize(new FactorizeParams((o, inverted) => o));
         }
