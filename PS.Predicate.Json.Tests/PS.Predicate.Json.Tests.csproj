@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BE889116-E82F-4890-9DA7-C1B71F2E7677}</ProjectGuid>
+    <ProjectGuid>{80A13B3A-318F-477C-AF2A-EDAAB4C436C5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PS</RootNamespace>
-    <AssemblyName>PS.Parser</AssemblyName>
+    <RootNamespace>PS.Predicate.Json.Tests</RootNamespace>
+    <AssemblyName>PS.Predicate.Json.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,6 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,14 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Parser\AssertResult.cs" />
-    <Compile Include="Data\Parser\AssertResultBranch.cs" />
-    <Compile Include="Data\Parser\AssertResultEmpty.cs" />
-    <Compile Include="Data\Parser\AssertResultToken.cs" />
-    <Compile Include="Data\Parser\ParseBranch.cs" />
-    <Compile Include="Data\Parser\ParseContext.cs" />
-    <Compile Include="Data\Parser\ParseEnvironment.cs" />
-    <Compile Include="Data\Parser\ParserException.cs" />
+    <Compile Include="Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +56,26 @@
       <Project>{d26839ec-992d-4ba3-95a0-354cfabb6e74}</Project>
       <Name>PS.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PS.Predicate.Json\PS.Predicate.Json.csproj">
+      <Project>{f318c692-2842-4d33-95d2-13356f588b34}</Project>
+      <Name>PS.Predicate.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PS.Predicate.Tests\PS.Predicate.Tests.csproj">
+      <Project>{ef9a9343-cac3-49b0-abb4-2e2485432316}</Project>
+      <Name>PS.Predicate.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PS.Predicate\PS.Predicate.csproj">
+      <Project>{2b3db529-cf2c-4397-b5cd-2ff71587f74f}</Project>
+      <Name>PS.Predicate</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TextFile1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
