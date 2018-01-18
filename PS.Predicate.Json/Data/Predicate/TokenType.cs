@@ -1,6 +1,6 @@
-namespace PS.Predicate.Json
+namespace PS.Data.Predicate
 {
-    enum TokenType
+    internal enum TokenType
     {
         Undefined,
         ArrayStart,
@@ -12,6 +12,6 @@ namespace PS.Predicate.Json
         Operator,
         Value,
         EOS,
-        Any,
+        Any
     }
 }

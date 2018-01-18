@@ -4,9 +4,9 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace PS.Predicate.Json
+namespace PS.Data.Predicate
 {
-    class JsonTokenizer
+    internal class JsonTokenizer
     {
         #region Members
 

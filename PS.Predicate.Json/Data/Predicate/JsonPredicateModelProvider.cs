@@ -3,12 +3,11 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using PS.Data.Logic;
 using PS.Data.Parser;
-using PS.Data.Predicate;
 using PS.Data.Predicate.Logic;
 using PS.Navigation;
 using LogicalExpression = PS.Data.Predicate.Logic.LogicalExpression;
 
-namespace PS.Predicate.Json
+namespace PS.Data.Predicate
 {
     /// <summary>
     ///     Grammar:

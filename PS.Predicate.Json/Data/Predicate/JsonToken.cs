@@ -1,6 +1,6 @@
-namespace PS.Predicate.Json
+namespace PS.Data.Predicate
 {
-    class JsonToken
+    internal class JsonToken
     {
         #region Constructors
 
