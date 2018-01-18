@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PS.Data;
+using PS.Query.Data.Predicate.Default;
 using PS.Query.Data.Predicate.ExpressionBuilder;
 using PS.Query.Data.Predicate.Model;
 
@@ -15,22 +17,12 @@ namespace PS.Query.Data.Predicate
 
         public PredicateOperators()
         {
-            _operators = new List<Operator>();
+            _operators = new List<Operator>(Operators.All.SelectMany(s => DescriptorStorage.GetAll(s.GetType())).OfType<Operator>());
         }
 
         #endregion
 
         #region IPredicateOperators Members
-
-        public ComplexOperatorBuilder<TResult> Complex<TResult>(string token)
-        {
-            return new ComplexOperatorBuilder<TResult>(this, token);
-        }
-
-        public SimpleOperatorBuilder<TSource> Simple<TSource>(string token)
-        {
-            return new SimpleOperatorBuilder<TSource>(this, token);
-        }
 
         public IPredicateOperators Register(Operator op)
         {
@@ -38,18 +30,24 @@ namespace PS.Query.Data.Predicate
             return this;
         }
 
+        public IPredicateOperators Reset()
+        {
+            _operators.Clear();
+            return this;
+        }
+
         #endregion
 
         #region IPredicateOperatorsProvider Members
 
-        IEnumerable<ComplexOperator> IPredicateOperatorsProvider.GetComplexOperators()
+        IEnumerable<SubsetOperator> IPredicateOperatorsProvider.GetSubsetOperators()
         {
-            return _operators.OfType<ComplexOperator>();
+            return _operators.OfType<SubsetOperator>();
         }
 
-        IEnumerable<SimpleOperator> IPredicateOperatorsProvider.GetOperatorsForType(Type type)
+        IEnumerable<PredicateOperator> IPredicateOperatorsProvider.GetPredicatesForType(Type type)
         {
-            return _operators.OfType<SimpleOperator>().Where(o => type == o.SourceType);
+            return _operators.OfType<PredicateOperator>().Where(o => type == o.SourceType);
         }
 
         #endregion

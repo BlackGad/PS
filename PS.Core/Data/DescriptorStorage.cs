@@ -32,8 +32,6 @@ namespace PS.Data
 
         #region Static members
 
-        public static IEnumerable<TArgument> All => DescriptorStorage.GetAll(typeof(TStorage)).OfType<TArgument>();
-
         public static bool Contains(object id)
         {
             return DescriptorStorage.Contains(typeof(TStorage), id);
@@ -55,8 +53,14 @@ namespace PS.Data
 
         protected static T FromCache<T>(Expression<Func<T>> factory)
         {
-            return (T)CachedValues.GetOrAdd(factory.ToString().GetHashCode(), o => factory.Compile().Invoke());
+            if (factory == null) return default(T);
+            var debugViewProperty = typeof(Expression).GetProperty("DebugView", BindingFlags.Instance | BindingFlags.NonPublic);
+            var debugView = debugViewProperty?.GetValue(factory) as string;
+            if (debugView == null) debugView = factory.ToString();
+            return (T)CachedValues.GetOrAdd(debugView.GetHashCode(), o => factory.Compile().Invoke());
         }
+
+        public static IEnumerable<TArgument> All => DescriptorStorage.GetAll(typeof(TStorage)).OfType<TArgument>();
 
         #endregion
     }
@@ -82,7 +86,7 @@ namespace PS.Data
             var info = GetStorageSnapshot(type);
             if (info == null)
             {
-                if(type == null) throw new ArgumentNullException(nameof(type));
+                if (type == null) throw new ArgumentNullException(nameof(type));
                 throw new InvalidCastException($"{type.FullName} is not inherited from DescriptorStorage");
             }
             return info.Snapshots
@@ -105,8 +109,8 @@ namespace PS.Data
             {
                 var types = type.EnumerateHierarchy().ToList();
                 var storageType = types.LastOrDefault(t => t.IsGenericType &&
-                                                         (t.GetGenericTypeDefinition() == typeof(DescriptorStorage<>) ||
-                                                          t.GetGenericTypeDefinition() == typeof(DescriptorStorage<,>)));
+                                                           (t.GetGenericTypeDefinition() == typeof(DescriptorStorage<>) ||
+                                                            t.GetGenericTypeDefinition() == typeof(DescriptorStorage<,>)));
 
                 if (storageType == null) return null;
                 types = types.TakeWhile(t => t != storageType).ToList();

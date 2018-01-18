@@ -2,11 +2,11 @@
 
 namespace PS.Query.Data.Predicate.Logic
 {
-    public class RouteExpressionComplex : RouteExpression
+    public class RouteSubsetExpression : RouteExpression
     {
         #region Properties
 
-        public string ComplexOperator { get; set; }
+        public string SubsetOperator { get; set; }
         public LogicalExpression Sub { get; set; }
 
         #endregion
@@ -17,7 +17,7 @@ namespace PS.Query.Data.Predicate.Logic
         {
             var parts = new List<string>();
             parts.Add($"{Route}");
-            if (!string.IsNullOrEmpty(ComplexOperator)) parts.Add($"{ComplexOperator}");
+            if (!string.IsNullOrEmpty(SubsetOperator)) parts.Add($"{SubsetOperator}");
             if (Sub != null) parts.Add($"SUB({Sub.Expressions?.Length ?? 0})");
             if (Operator != null) parts.Add($"{Operator}");
             return string.Join(" ", parts);

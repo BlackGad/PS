@@ -9,13 +9,13 @@ namespace PS.Query.Data.Predicate
     {
         #region Members
 
-        IPredicateRoutes<TResult> Complex<TResult>(Route route,
-                                                   Expression<Func<TClass, IEnumerable<TResult>>> accessor,
-                                                   Action<PredicateRouteOptions> options = null);
-
         IPredicateRoutes<TClass> Route<TResult>(Route route,
                                                 Expression<Func<TClass, TResult>> accessor,
                                                 Action<PredicateRouteOptions> options = null);
+
+        IPredicateRoutes<TResult> Subset<TResult>(Route route,
+                                                  Expression<Func<TClass, IEnumerable<TResult>>> accessor,
+                                                  Action<PredicateRouteOptions> options = null);
 
         #endregion
     }

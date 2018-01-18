@@ -86,7 +86,7 @@ namespace PS.Query.Json
         internal void RestoreContextRoute(ParseEnvironment env)
         {
             var snapshot = (Tuple<RouteExpression[], RouteExpression>)env[env.Id];
-            ((RouteExpressionComplex)snapshot.Item2).Sub = env.Get<LogicalExpression>();
+            ((RouteSubsetExpression)snapshot.Item2).Sub = env.Get<LogicalExpression>();
 
             env.Set(snapshot.Item1);
             env.Set(snapshot.Item2);
@@ -108,24 +108,24 @@ namespace PS.Query.Json
                .Assert("Commit route", CommitContextRoute);
 
             ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION")
-               .Assert("Create route", env => env.Set<RouteExpression>(new RouteExpressionComplex()))
+               .Assert("Create route", env => env.Set<RouteExpression>(new RouteSubsetExpression()))
                .Assert(AggregateContextRoute)
                .Assert(ROUTE_LIST)
                .Assert((token, env) => CheckToken(token,
                                                   TokenType.Operator,
-                                                  () => ((RouteExpressionComplex)env.Get<RouteExpression>()).ComplexOperator = token.Value))
+                                                  () => ((RouteSubsetExpression)env.Get<RouteExpression>()).SubsetOperator = token.Value))
                .Assert("Push route", SaveContextRoute)
                .Assert(EXPRESSION_CONDITION)
                .Assert("Pop route", RestoreContextRoute)
                .Assert("Commit route", CommitContextRoute);
 
             ctx.Sequence("object(route) ROUTE_LIST operator EXPRESSION_CONDITION OPERATION")
-               .Assert("Create route", env => env.Set<RouteExpression>(new RouteExpressionComplex()))
+               .Assert("Create route", env => env.Set<RouteExpression>(new RouteSubsetExpression()))
                .Assert(AggregateContextRoute)
                .Assert(ROUTE_LIST)
                .Assert((token, env) => CheckToken(token,
                                                   TokenType.Operator,
-                                                  () => ((RouteExpressionComplex)env.Get<RouteExpression>()).ComplexOperator = token.Value))
+                                                  () => ((RouteSubsetExpression)env.Get<RouteExpression>()).SubsetOperator = token.Value))
                .Assert("Save route", SaveContextRoute)
                .Assert(EXPRESSION_CONDITION)
                .Assert("Pop route", RestoreContextRoute)

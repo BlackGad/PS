@@ -41,11 +41,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Predicate\Default\Converters.cs" />
+    <Compile Include="Data\Predicate\Default\EqualOperatorsGroup.cs" />
     <Compile Include="Data\Predicate\Default\Operators.cs" />
+    <Compile Include="Data\Predicate\Default\NumericOperatorsGroup.cs" />
+    <Compile Include="Data\Predicate\Default\StringOperatorsGroup.cs" />
+    <Compile Include="Data\Predicate\Default\SubsetOperatorsGroup.cs" />
     <Compile Include="Data\Predicate\Extensions\PredicateConvertersExtensions.cs" />
+    <Compile Include="Data\Predicate\Extensions\PredicateOperatorsExtensions.cs" />
     <Compile Include="Data\Predicate\Extensions\PredicateRoutesExtensions.cs" />
-    <Compile Include="Data\Predicate\Model\ComplexOperator.cs" />
-    <Compile Include="Data\Predicate\Model\ComplexOperatorBuilder.cs" />
+    <Compile Include="Data\Predicate\Model\SubsetOperator.cs" />
+    <Compile Include="Data\Predicate\Model\SubsetOperatorBuilder.cs" />
     <Compile Include="Data\Predicate\ExpressionBuilder\PredicateExpressionBuilder.cs" />
     <Compile Include="Data\Predicate\IScheme.cs" />
     <Compile Include="Data\Predicate\ExpressionBuilder\IPredicateSchemeProvider.cs" />
@@ -55,20 +60,20 @@
     <Compile Include="Data\Predicate\IPredicateOperators.cs" />
     <Compile Include="Data\Predicate\IPredicateRoutes.cs" />
     <Compile Include="Data\Predicate\ExpressionBuilder\IPredicateRoutesProvider.cs" />
-    <Compile Include="Data\Predicate\Logic\RouteExpressionComplex.cs" />
+    <Compile Include="Data\Predicate\Logic\RouteSubsetExpression.cs" />
     <Compile Include="Data\Predicate\Logic\OperatorExpression.cs" />
     <Compile Include="Data\Predicate\Model\Operator.cs" />
     <Compile Include="Data\Predicate\PredicateBatchConverter.cs" />
-    <Compile Include="Data\Predicate\PredicateRouteComplex.cs" />
+    <Compile Include="Data\Predicate\PredicateRouteSubset.cs" />
     <Compile Include="Data\Predicate\PredicateConverters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Data\Predicate\Model\SimpleOperator.cs" />
+    <Compile Include="Data\Predicate\Model\PredicateOperator.cs" />
     <Compile Include="Data\Predicate\PredicateRouteOptions.cs" />
     <Compile Include="Data\Predicate\Scheme.cs" />
     <Compile Include="Data\Predicate\PredicateOperators.cs" />
     <Compile Include="Data\Predicate\PredicateRoute.cs" />
     <Compile Include="Data\Predicate\PredicateRoutes.cs" />
-    <Compile Include="Data\Predicate\Model\SimpleOperatorBuilder.cs" />
+    <Compile Include="Data\Predicate\Model\PredicateOperatorBuilder.cs" />
     <Compile Include="Data\Predicate\Model\OperatorReferencesBuilder.cs" />
     <Compile Include="Data\Predicate\IPredicateModelProvider.cs" />
     <Compile Include="Data\Predicate\Logic\LogicalExpression.cs" />

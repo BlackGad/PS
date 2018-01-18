@@ -10,7 +10,11 @@ namespace PS.Query.Tests.TestReferences.ExpressionBuilderTests
 
         public static List<License> CreateModel()
         {
-            var template = new Template();
+            var template = new Template
+            {
+                Name = "1"
+            };
+
             return new List<License>
             {
                 new License

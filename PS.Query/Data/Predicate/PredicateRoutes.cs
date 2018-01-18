@@ -28,9 +28,9 @@ namespace PS.Query.Data.Predicate
 
         #region IPredicateRoutes<TClass> Members
 
-        public IPredicateRoutes<TResult> Complex<TResult>(Route route,
-                                                          Expression<Func<TClass, IEnumerable<TResult>>> accessor,
-                                                          Action<PredicateRouteOptions> options = null)
+        public IPredicateRoutes<TResult> Subset<TResult>(Route route,
+                                                         Expression<Func<TClass, IEnumerable<TResult>>> accessor,
+                                                         Action<PredicateRouteOptions> options = null)
         {
             if (Routes.ContainsKey(route)) throw new ArgumentException($"{route} route already declared");
             var memberAccessExpression = accessor?.Body as MemberExpression;
@@ -41,12 +41,12 @@ namespace PS.Query.Data.Predicate
 
             var result = new PredicateRoutes<TResult>();
 
-            var complexRoute = new PredicateRouteComplex(route,
-                                                      typeof(TResult),
-                                                      optionInstance,
-                                                      memberAccessExpression,
-                                                      result);
-            Routes.Add(route, complexRoute);
+            var routeSubset = new PredicateRouteSubset(route,
+                                                       typeof(TResult),
+                                                       optionInstance,
+                                                       memberAccessExpression,
+                                                       result);
+            Routes.Add(route, routeSubset);
 
             return result;
         }
@@ -71,12 +71,12 @@ namespace PS.Query.Data.Predicate
 
         #region IPredicateRoutesProvider Members
 
-        public PredicateRouteComplex GetComplexRoute(Route route)
+        public PredicateRouteSubset GetSubsetRoute(Route route)
         {
             return Routes.Where(p => p.Key.AreEqual(route, RouteCaseMode.Insensitive) &&
-                                     p.Value.GetType() == typeof(PredicateRouteComplex))
+                                     p.Value.GetType() == typeof(PredicateRouteSubset))
                          .Select(p => p.Value)
-                         .OfType<PredicateRouteComplex>()
+                         .OfType<PredicateRouteSubset>()
                          .FirstOrDefault();
         }
 

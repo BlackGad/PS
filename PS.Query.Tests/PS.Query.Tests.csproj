@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -48,13 +48,14 @@
     <Compile Include="TestReferences\ExpressionBuilderTests\Model\License.cs" />
     <Compile Include="TestReferences\ExpressionBuilderTests\ModelBuilder.cs" />
     <Compile Include="TestReferences\ExpressionBuilderTests\Model\Template.cs" />
-    <Compile Include="Tests\ExpressionBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Tests\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PS.Core\PS.Core.csproj">
       <Project>{D26839EC-992D-4BA3-95A0-354CFABB6E74}</Project>

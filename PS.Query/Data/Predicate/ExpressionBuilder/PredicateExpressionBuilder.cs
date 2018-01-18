@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using PS.Data.Logic;
@@ -35,23 +36,23 @@ namespace PS.Query.Data.Predicate.ExpressionBuilder
                 Expression intermediateResult = null;
                 foreach (var expression in logicalExpression.Expressions.OfType<RouteExpression>()) //And
                 {
-                    var complexExpression = expression as RouteExpressionComplex;
-                    if (complexExpression != null)
+                    var routeSubsetExpression = expression as RouteSubsetExpression;
+                    if (routeSubsetExpression != null)
                     {
-                        var route = schemeRoutes.GetComplexRoute(expression.Route);
-                        if (route == null) throw new ArgumentException($"Cannot process '{complexExpression.Route}' complex route");
+                        var route = schemeRoutes.GetSubsetRoute(expression.Route);
+                        if (route == null) throw new ArgumentException($"Cannot process '{routeSubsetExpression.Route}' subset route");
 
-                        var complexOperator = GetComplexOperator(scheme, route, complexExpression.ComplexOperator);
-                        if (complexOperator == null)
+                        var subsetOperator = GeSubsetOperator(scheme, route, routeSubsetExpression.SubsetOperator);
+                        if (subsetOperator == null)
                         {
-                            var message = $"'{expression.Route}' complex route does not support '{complexExpression.ComplexOperator}' operator";
+                            var message = $"'{expression.Route}' subset route does not support '{routeSubsetExpression.SubsetOperator}' operator";
                             throw new ArgumentException(message);
                         }
 
-                        var subExpression = Build(scheme, route.Type, route.Routes, complexExpression.Sub);
+                        var subExpression = Build(scheme, route.Type, route.Routes, routeSubsetExpression.Sub);
 
                         var accessor = ParameterReplacer.Replace(p, route.Accessor);
-                        var compiledExpression = complexOperator.ExpressionFactory(accessor, subExpression);
+                        var compiledExpression = subsetOperator.Expression(accessor, subExpression);
 
                         var operatorExpression = expression.Operator;
                         var sourceType = compiledExpression.Type;
@@ -67,7 +68,7 @@ namespace PS.Query.Data.Predicate.ExpressionBuilder
 
                             var stringValue = operatorExpression.Value.Trim('\"').Trim('\'');
                             var value = scheme.Converters.Convert(stringValue, sourceType);
-                            compiledExpression = @operator.ExpressionFactory(compiledExpression, value);
+                            compiledExpression = @operator.Expression(compiledExpression, sourceType, value);
                             if (operatorExpression.Inverted) compiledExpression = Expression.Not(compiledExpression);
                         }
 
@@ -94,7 +95,7 @@ namespace PS.Query.Data.Predicate.ExpressionBuilder
                         var accessor = ParameterReplacer.Replace(p, route.Accessor);
                         var stringValue = expression.Operator.Value.Trim('\"').Trim('\'');
                         var value = scheme.Converters.Convert(stringValue, route.Type);
-                        Expression compiledExpression = @operator.ExpressionFactory(accessor, value);
+                        Expression compiledExpression = @operator.Expression(accessor, route.Type, value);
 
                         if (expression.Operator.Inverted) compiledExpression = Expression.Not(compiledExpression);
 
@@ -121,22 +122,27 @@ namespace PS.Query.Data.Predicate.ExpressionBuilder
             return expression.Factorize(new FactorizeParams((o, inverted) => o));
         }
 
-        private static ComplexOperator GetComplexOperator(IPredicateSchemeProvider scheme, PredicateRouteComplex route, string name)
+        private static SubsetOperator GeSubsetOperator(IPredicateSchemeProvider scheme, PredicateRouteSubset route, string name)
         {
             if (route == null) return null;
-
-            var availableOperators = scheme.Operators.GetComplexOperators();
-            availableOperators = availableOperators.Where(o => route.Options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
-            if (!route.Options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
-
-            return availableOperators.FirstOrDefault(o => string.Equals(o.Name, name, StringComparison.InvariantCultureIgnoreCase));
+            return SelectOperator(scheme.Operators.GetSubsetOperators().ToList(), route.Options, name);
         }
 
-        private static SimpleOperator GetOperator(IPredicateSchemeProvider scheme, Type sourceType, PredicateRouteOptions options, string name)
+        private static PredicateOperator GetOperator(IPredicateSchemeProvider scheme, Type sourceType, PredicateRouteOptions options, string name)
         {
-            var availableOperators = scheme.Operators.GetOperatorsForType(sourceType);
-            availableOperators = availableOperators.Where(o => options.AdditionalOperators.Contains(o.Key) || string.IsNullOrEmpty(o.Key));
-            if (!options.IncludeDefaultOperators) availableOperators = availableOperators.Where(o => !string.IsNullOrEmpty(o.Key));
+            return SelectOperator(scheme.Operators.GetPredicatesForType(sourceType).ToList(), options, name);
+        }
+
+        private static TOperator SelectOperator<TOperator>(IList<TOperator> allOperators, PredicateRouteOptions options, string name)
+            where TOperator : Operator
+        {
+            var availableOperators = allOperators.Except(allOperators.Where(o => !string.IsNullOrEmpty(o.Key) &&
+                                                                                 !options.AdditionalOperators.Contains(o.Key)));
+            if (!options.IncludeDefaultOperators)
+                availableOperators = availableOperators.Except(allOperators.Where(o => string.IsNullOrEmpty(o.Key)));
+            else
+                availableOperators = availableOperators.Except(allOperators.Where(o => string.IsNullOrEmpty(o.Key) &&
+                                                                                       options.ExcludeDefaultOperators.Contains(o.Name)));
 
             return availableOperators.FirstOrDefault(o => string.Equals(o.Name, name, StringComparison.InvariantCultureIgnoreCase));
         }

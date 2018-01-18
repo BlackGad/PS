@@ -2,7 +2,7 @@
 using PS.Data;
 using PS.Extensions;
 
-namespace PS.Query.Data.Predicate
+namespace PS.Query.Data.Predicate.Default
 {
     public class Converters : DescriptorStorage<Converters, PredicateBatchConverter>
     {

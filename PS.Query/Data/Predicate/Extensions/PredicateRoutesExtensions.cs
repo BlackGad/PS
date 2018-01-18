@@ -9,18 +9,6 @@ namespace PS.Query.Data.Predicate.Extensions
     {
         #region Static members
 
-        public static IPredicateRoutes<TResult> Complex<TClass, TResult>(this IPredicateRoutes<TClass> routes,
-                                                                         Expression<Func<TClass, IEnumerable<TResult>>> accessor,
-                                                                         Action<PredicateRouteOptions> options = null)
-        {
-            if (routes == null) throw new ArgumentNullException(nameof(routes));
-            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
-
-            var expressionBody = accessor.Body as MemberExpression;
-            var route = ExtractRoute(expressionBody);
-            return routes.Complex(route, accessor, options);
-        }
-
         public static IPredicateRoutes<TClass> Route<TClass, TResult>(this IPredicateRoutes<TClass> routes,
                                                                       Expression<Func<TClass, TResult>> accessor,
                                                                       Action<PredicateRouteOptions> options = null)
@@ -30,6 +18,18 @@ namespace PS.Query.Data.Predicate.Extensions
             var expressionBody = accessor.Body as MemberExpression;
             var route = ExtractRoute(expressionBody);
             return routes.Route(route, accessor, options);
+        }
+
+        public static IPredicateRoutes<TResult> Subset<TClass, TResult>(this IPredicateRoutes<TClass> routes,
+                                                                        Expression<Func<TClass, IEnumerable<TResult>>> accessor,
+                                                                        Action<PredicateRouteOptions> options = null)
+        {
+            if (routes == null) throw new ArgumentNullException(nameof(routes));
+            if (accessor == null) throw new ArgumentNullException(nameof(accessor));
+
+            var expressionBody = accessor.Body as MemberExpression;
+            var route = ExtractRoute(expressionBody);
+            return routes.Subset(route, accessor, options);
         }
 
         private static Route ExtractRoute(MemberExpression expressionBody)

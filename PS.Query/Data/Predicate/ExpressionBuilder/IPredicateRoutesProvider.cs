@@ -6,7 +6,7 @@ namespace PS.Query.Data.Predicate.ExpressionBuilder
     {
         #region Members
 
-        PredicateRouteComplex GetComplexRoute(Route route);
+        PredicateRouteSubset GetSubsetRoute(Route route);
         PredicateRoute GetRoute(Route route);
 
         #endregion

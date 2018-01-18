@@ -8,8 +8,8 @@ namespace PS.Query.Data.Predicate.ExpressionBuilder
     {
         #region Members
 
-        IEnumerable<ComplexOperator> GetComplexOperators();
-        IEnumerable<SimpleOperator> GetOperatorsForType(Type type);
+        IEnumerable<SubsetOperator> GetSubsetOperators();
+        IEnumerable<PredicateOperator> GetPredicatesForType(Type type);
 
         #endregion
     }

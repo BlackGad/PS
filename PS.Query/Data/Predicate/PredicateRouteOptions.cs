@@ -11,6 +11,7 @@ namespace PS.Query.Data.Predicate
         {
             Operators = new OperatorReferencesBuilder(this);
             AdditionalOperators = new List<string>();
+            ExcludeDefaultOperators = new List<string>();
             IncludeDefaultOperators = true;
         }
 
@@ -19,6 +20,7 @@ namespace PS.Query.Data.Predicate
         #region Properties
 
         public List<string> AdditionalOperators { get; }
+        public List<string> ExcludeDefaultOperators { get; }
 
         public bool IncludeDefaultOperators { get; set; }
 
