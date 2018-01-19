@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace PS.Extensions
 {
@@ -52,6 +53,18 @@ namespace PS.Extensions
                 typeof(Decimal),
                 typeof(Guid)
             };
+        }
+
+        public static IEnumerable<Type> GetTypesSafely(this Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(x => x != null);
+            }
         }
 
         public static int MergeHash(this int hash, int addHash)

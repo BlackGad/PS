@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
+using PS.Data.Predicate.Serialization;
 
 namespace PS.Data.Predicate.Logic
 {
+    [XmlRoot("Subset")]
     public class RouteSubsetExpression : RouteExpression
     {
         #region Properties
@@ -21,6 +25,31 @@ namespace PS.Data.Predicate.Logic
             if (Subset != null) parts.Add($"{{{Subset}}})");
             if (Operator != null) parts.Add($"{Operator}");
             return string.Join(" ", parts);
+        }
+
+        public override void ReadXml(XmlReader reader)
+        {
+            base.ReadXml(reader);
+            Query = ExpressionSerialization.ReadSubsetExpressionQuery(reader);
+
+            using (var subTree = reader.ReadSubtree())
+            {
+                //Skip root node
+                subTree.MoveToContent();
+                subTree.Read();
+
+                if (subTree.IsStartElement())
+                {
+                    Subset = ExpressionSerialization.ReadNode(subTree);
+                }
+            }
+        }
+
+        public override void WriteXml(XmlWriter writer)
+        {
+            base.WriteXml(writer);
+            ExpressionSerialization.WriteSubsetExpressionQuery(writer, Query);
+            if (Subset != null) ExpressionSerialization.WriteNode(writer, Subset);
         }
 
         #endregion

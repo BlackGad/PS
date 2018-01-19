@@ -67,6 +67,7 @@
     <Compile Include="Data\Predicate\PredicateBatchConverter.cs" />
     <Compile Include="Data\Predicate\PredicateRouteSubset.cs" />
     <Compile Include="Data\Predicate\PredicateConverters.cs" />
+    <Compile Include="Data\Predicate\Serialization\ExpressionSerialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\Predicate\Model\PredicateOperator.cs" />
     <Compile Include="Data\Predicate\PredicateRouteOptions.cs" />

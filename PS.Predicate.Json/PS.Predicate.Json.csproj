@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Predicate\ExpressionJsonConverter.cs" />
     <Compile Include="Data\Predicate\JsonPredicateModelProvider.cs" />
     <Compile Include="Data\Predicate\JsonTokenizer.cs" />
     <Compile Include="Data\Predicate\JsonToken.cs" />

@@ -1,16 +1,16 @@
-<LogicalExpression Type="And">
+<Logical Type="And">
     <Expression Route="id" Operator="equal" value="FA36C38F-C1FF-4740-8F1E-5D0D5D76E508"/>
     <Expression Route="template.name" Operator="Not match" value="FA36C38F-C1FF-4740-8F1E-5D0D5D76E508"/>
     <Subset Route="claims" Query="any">
-        <LogicalExpression Type="And">
+        <Logical Type="And">
             <Expression Route="type" Operator="equal" value="claim type"/>
             <Expression Route="value" Operator="equal" value="claim value"/>
-        </LogicalExpression>
+        </Logical>
     </Subset>
     <Subset Route="claims" Query="count" Operator="equal" value="3">
-        <LogicalExpression Type="Or">
+        <Logical Type="Or">
             <Expression Route="type" Operator="equal" value="claim type"/>
             <Expression Route="value" Operator="equal" value="claim value"/>
-        </LogicalExpression>
+        </Logical>
     </Subset>
-</LogicalExpression>
+</Logical>

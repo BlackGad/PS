@@ -1,16 +1,18 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using PS.Data.Logic;
+using PS.Data.Predicate.Serialization;
 
 namespace PS.Data.Predicate.Logic
 {
+    [XmlRoot("Logical")]
     public class LogicalExpression : ILogicalExpression,
-                                     IExpression,
-                                     IXmlSerializable
+                                     IExpression
     {
         #region Constructors
 
@@ -28,7 +30,7 @@ namespace PS.Data.Predicate.Logic
 
         #region Properties
 
-        public IExpression[] Expressions { get; }
+        public IExpression[] Expressions { get; private set; }
 
         #endregion
 
@@ -41,9 +43,51 @@ namespace PS.Data.Predicate.Logic
 
         #endregion
 
+        #region IExpression Members
+
+        public XmlSchema GetSchema()
+        {
+            throw new NotSupportedException();
+        }
+
+        public virtual void ReadXml(XmlReader reader)
+        {
+            var @operator = ExpressionSerialization.ReadExpressionOperator(reader);
+            if (@operator != null) Operator = (LogicalOperator)Enum.Parse(typeof(LogicalOperator), @operator, true);
+
+            var result = new List<IExpression>();
+
+            using (var subTree = reader.ReadSubtree())
+            {
+                //Skip root node
+                subTree.MoveToContent();
+                subTree.Read();
+
+                while (subTree.IsStartElement())
+                {
+                    result.Add(ExpressionSerialization.ReadNode(subTree));
+                    subTree.Read();
+                }
+            }
+
+            reader.Skip();
+            Expressions = result.ToArray();
+        }
+
+        public virtual void WriteXml(XmlWriter writer)
+        {
+            ExpressionSerialization.WriteExpressionOperator(writer, Operator.ToString());
+            foreach (var expression in Expressions)
+            {
+                ExpressionSerialization.WriteNode(writer, expression);
+            }
+        }
+
+        #endregion
+
         #region ILogicalExpression Members
 
-        public LogicalOperator Operator { get; }
+        public LogicalOperator Operator { get; private set; }
 
         IEnumerable ILogicalExpression.Expressions
         {
@@ -58,23 +102,6 @@ namespace PS.Data.Predicate.Logic
         void ILogicalExpression.RemoveExpression(object expression)
         {
             throw new NotSupportedException();
-        }
-
-        #endregion
-
-        #region IXmlSerializable Members
-
-        public XmlSchema GetSchema()
-        {
-            throw new NotSupportedException();
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
         }
 
         #endregion

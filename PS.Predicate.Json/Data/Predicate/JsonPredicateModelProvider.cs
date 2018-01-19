@@ -60,7 +60,7 @@ namespace PS.Data.Predicate
         {
             if (t.Type != TokenType.Object) return false;
             var contextRoute = env.Get<RouteExpression>();
-            contextRoute.Route = Route.Create(contextRoute.Route, t.Value);
+            contextRoute.Route = Route.Create(contextRoute.Route, Route.Parse(t.Value));
 
             return true;
         }

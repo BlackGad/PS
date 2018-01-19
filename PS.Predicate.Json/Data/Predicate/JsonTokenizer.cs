@@ -81,7 +81,7 @@ namespace PS.Data.Predicate
         {
             return new List<JsonToken>
             {
-                new JsonToken(TokenType.Value, jObject.ToString(Formatting.None))
+                new JsonToken(TokenType.Value, jObject.ToString(Formatting.None).Trim('\"', '\''))
             };
         }
 
