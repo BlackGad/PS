@@ -2,7 +2,7 @@
 
 namespace PS.Data.Parser
 {
-    internal class AssertResultBranch<TToken> : AssertResult
+    internal class AssertResultBranch<TToken> : AssertResult where TToken : IToken
     {
         #region Properties
 

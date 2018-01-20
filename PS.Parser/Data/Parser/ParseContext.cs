@@ -8,13 +8,13 @@ using PS.Extensions;
 
 namespace PS.Data.Parser
 {
-    public class ParseContext<TToken> : IFormattable
+    public class ParseContext<TToken> : IFormattable where TToken : IToken
     {
         #region Static members
 
-        public static ParseContext<TToken> Parse(IEnumerable<TToken> tokens)
+        public static ParseContext<TToken> Parse(IEnumerable<TToken> tokens, TokenTable<TToken> table)
         {
-            return new ParseContext<TToken>(tokens);
+            return new ParseContext<TToken>(tokens, table);
         }
 
         private static string GenerateDGraphVertexId(Guid id)
@@ -27,23 +27,29 @@ namespace PS.Data.Parser
         private readonly int _offset;
 
         private readonly List<ParseBranch<TToken>> _sequenceChecks;
+        private readonly TokenTable<TToken> _table;
         private readonly List<TToken> _tokens;
 
         #region Constructors
 
-        internal ParseContext(IEnumerable<TToken> tokens) : this(new ParseEnvironment())
+        private ParseContext(IEnumerable<TToken> tokens, TokenTable<TToken> table) : this(new ParseEnvironment(), table)
         {
             if (tokens == null) throw new ArgumentNullException(nameof(tokens));
             _tokens = new List<TToken>(tokens);
         }
 
-        private ParseContext(ParseEnvironment env)
+        private ParseContext(ParseEnvironment env, TokenTable<TToken> table)
         {
+            if (env == null) throw new ArgumentNullException(nameof(env));
+            if (table == null) throw new ArgumentNullException(nameof(table));
+
+            _table = table;
             _sequenceChecks = new List<ParseBranch<TToken>>();
+
             Environment = env;
         }
 
-        private ParseContext(List<TToken> tokens, ParseEnvironment env, int offset) : this(env)
+        private ParseContext(List<TToken> tokens, ParseEnvironment env, int offset, TokenTable<TToken> table) : this(env, table)
         {
             _tokens = tokens;
             _offset = offset;
@@ -125,7 +131,7 @@ namespace PS.Data.Parser
 
         internal ParseContext<TToken> Branch(int offset, ParseEnvironment environment)
         {
-            return new ParseContext<TToken>(_tokens, environment, _offset + offset);
+            return new ParseContext<TToken>(_tokens, environment, _offset + offset, _table);
         }
 
         internal TToken GetToken(int position = 0)

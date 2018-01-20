@@ -20,8 +20,15 @@
                 { 
                     "or" :
                     [
-                        { "type": { "equal": "claim type" } },
-                        { "value": { "equal": "claim value" } }
+                        { 
+                            "and" : 
+                            [
+                                { "type": { "equal": "1" } },
+                                { "value": { "equal": "2" } }
+                            ]
+                        },
+                        { "type": { "equal": "3" } },
+                        { "value": { "equal": "4" } }
                     ]
                 },
                 "equal": "3"

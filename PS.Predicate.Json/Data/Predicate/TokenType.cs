@@ -2,7 +2,6 @@ namespace PS.Data.Predicate
 {
     internal enum TokenType
     {
-        Undefined,
         ArrayStart,
         ArrayEnd,
         Object,
@@ -11,7 +10,6 @@ namespace PS.Data.Predicate
         Not,
         Operator,
         Value,
-        EOS,
-        Any
+        EOS
     }
 }

@@ -1,6 +1,8 @@
+using PS.Data.Parser;
+
 namespace PS.Data.Predicate
 {
-    internal class JsonToken
+    internal class JsonToken : IToken
     {
         #region Constructors
 
@@ -26,6 +28,16 @@ namespace PS.Data.Predicate
             var result = Type.ToString();
             if (Value != null) result += ": " + Value;
             return result;
+        }
+
+        #endregion
+
+        #region IToken Members
+
+        public bool Equals(IToken other)
+        {
+            var token = other as JsonToken;
+            return token?.Type == Type;
         }
 
         #endregion

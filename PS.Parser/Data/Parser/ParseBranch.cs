@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PS.Data.Parser
 {
-    public class ParseBranch<TToken>
+    public class ParseBranch<TToken> where TToken : IToken
     {
         #region Constructors
 
@@ -56,12 +56,12 @@ namespace PS.Data.Parser
 
         #region Members
 
-        public ParseBranch<TToken> Assert(Func<TToken, ParseEnvironment, bool> factory)
+        public ParseBranch<TToken> Token(Func<TToken, ParseEnvironment, bool> factory)
         {
-            return Assert(null, factory);
+            return Token(null, factory);
         }
 
-        public ParseBranch<TToken> Assert(string label, Func<TToken, ParseEnvironment, bool> factory)
+        public ParseBranch<TToken> Token(string label, Func<TToken, ParseEnvironment, bool> factory)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
@@ -97,12 +97,12 @@ namespace PS.Data.Parser
             return this;
         }
 
-        public ParseBranch<TToken> Assert(Action<ParseContext<TToken>> factory)
+        public ParseBranch<TToken> Rule(Action<ParseContext<TToken>> factory)
         {
-            return Assert(null, factory);
+            return Rule(null, factory);
         }
 
-        public ParseBranch<TToken> Assert(string label, Action<ParseContext<TToken>> factory)
+        public ParseBranch<TToken> Rule(string label, Action<ParseContext<TToken>> factory)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
@@ -138,12 +138,12 @@ namespace PS.Data.Parser
             return this;
         }
 
-        public ParseBranch<TToken> Assert(Action<ParseEnvironment> action = null)
+        public ParseBranch<TToken> Action(Action<ParseEnvironment> action = null)
         {
-            return Assert(null, action);
+            return Action(null, action);
         }
 
-        public ParseBranch<TToken> Assert(string label, Action<ParseEnvironment> action = null)
+        public ParseBranch<TToken> Action(string label, Action<ParseEnvironment> action = null)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
 

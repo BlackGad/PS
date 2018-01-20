@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using PS.Extensions;
 
 namespace PS.Data.Parser
 {
@@ -41,6 +43,12 @@ namespace PS.Data.Parser
 
         #region Members
 
+        public void Add<T>(T value)
+        {
+            var array = this[typeof(T[])].Enumerate<T>();
+            this[typeof(T[])] = array.Union(new[] { value });
+        }
+
         public ParseEnvironment Clone()
         {
             return Clone(new ParseEnvironment());
@@ -58,19 +66,19 @@ namespace PS.Data.Parser
             return env;
         }
 
-        public T Get<T>()
+        public T Peek<T>()
         {
             return (T)this[typeof(T)];
         }
 
         public T Pop<T>()
         {
-            var result = Get<T>();
-            Set(default(T));
+            var result = Peek<T>();
+            Push(default(T));
             return result;
         }
 
-        public void Set<T>(T value)
+        public void Push<T>(T value)
         {
             this[typeof(T)] = value;
         }

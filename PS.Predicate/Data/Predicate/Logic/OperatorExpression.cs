@@ -20,7 +20,7 @@ namespace PS.Data.Predicate.Logic
 
             if (Inverted) parts.Add("NOT");
             if (!string.IsNullOrEmpty(Name)) parts.Add($"{Name}");
-            if (!string.IsNullOrEmpty(Value)) parts.Add($"{Value}");
+            if (!string.IsNullOrEmpty(Value)) parts.Add($"'{Value}'");
             return string.Join(" ", parts);
         }
 

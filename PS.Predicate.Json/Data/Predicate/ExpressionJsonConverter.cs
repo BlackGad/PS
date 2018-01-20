@@ -19,9 +19,26 @@ namespace PS.Data.Predicate
                 writer.WriteStartArray();
                 foreach (var expression in logicalExpression.Expressions.Enumerate())
                 {
-                    WriteJson(writer, expression, serializer);
+                    serializer.Serialize(writer, expression);
                 }
                 writer.WriteEndArray();
+                writer.WriteEndObject();
+                return;
+            }
+
+            var routeSubsetExpression = value as RouteSubsetExpression;
+            if (routeSubsetExpression != null)
+            {
+                writer.WriteStartObject();
+                writer.WritePropertyName(routeSubsetExpression.Route.ToString().ToLowerInvariant());
+                writer.WriteStartObject();
+                writer.WritePropertyName(routeSubsetExpression.Query.ToLowerInvariant());
+                serializer.Serialize(writer, routeSubsetExpression.Subset);
+                writer.WriteEndObject();
+                if (routeSubsetExpression.Operator != null)
+                {
+                    serializer.Serialize(writer, routeSubsetExpression.Operator);
+                }
                 writer.WriteEndObject();
                 return;
             }
@@ -32,9 +49,10 @@ namespace PS.Data.Predicate
                 writer.WriteStartObject();
                 writer.WritePropertyName(routeExpression.Route.ToString().ToLowerInvariant());
                 writer.WriteStartObject();
-                WriteExpressionOperator(writer, serializer, routeExpression.Operator);
+                serializer.Serialize(writer, routeExpression.Operator);
                 writer.WriteEndObject();
                 writer.WriteEndObject();
+                return;
             }
 
             var operatorExpression = value as OperatorExpression;
@@ -42,40 +60,36 @@ namespace PS.Data.Predicate
             {
                 if (operatorExpression.Inverted)
                 {
-                    
+                    writer.WritePropertyName("not");
+                    writer.WriteStartObject();
                 }
+
+                writer.WritePropertyName(operatorExpression.Name.ToLowerInvariant());
+                writer.WriteValue(operatorExpression.Value);
+
+                if (operatorExpression.Inverted) writer.WriteEndObject();
+                return;
             }
-            
+
+            throw new NotSupportedException();
         }
 
-        private void WriteExpressionOperator(JsonWriter writer, JsonSerializer serializer, OperatorExpression @operator)
-        {
-            if (@operator == null) return;
-
-            if (@operator.Inverted)
-            {
-                writer.WritePropertyName("not");
-            }
-        }
-
-        /// <summary>
-        ///     Reads the JSON representation of the object.
-        /// </summary>
-        /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>
-        ///     The object value.
-        /// </returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            //if (objectType == typeof())
+            //    switch (objectType)
+            //    {
+            //    }
+            serializer.Populate(reader, new RouteExpression());
+            var jToken = serializer.Deserialize<RouteExpression>(reader);
+            //reader.Value
+            return null;
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(IExpression).IsAssignableFrom(objectType);
+            return typeof(IExpression).IsAssignableFrom(objectType) ||
+                   typeof(OperatorExpression).IsAssignableFrom(objectType);
         }
 
         #endregion
