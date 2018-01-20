@@ -27,7 +27,6 @@ namespace PS.Data.Parser
         private readonly int _offset;
 
         private readonly List<ParseBranch<TToken>> _sequenceChecks;
-        private readonly TokenTable<TToken> _table;
         private readonly List<TToken> _tokens;
 
         #region Constructors
@@ -43,7 +42,7 @@ namespace PS.Data.Parser
             if (env == null) throw new ArgumentNullException(nameof(env));
             if (table == null) throw new ArgumentNullException(nameof(table));
 
-            _table = table;
+            TokenTable = table;
             _sequenceChecks = new List<ParseBranch<TToken>>();
 
             Environment = env;
@@ -79,6 +78,8 @@ namespace PS.Data.Parser
                 return successBranches.OrderByDescending(check => check.GetTokensLength()).First();
             }
         }
+
+        public TokenTable<TToken> TokenTable { get; }
 
         #endregion
 
@@ -131,7 +132,7 @@ namespace PS.Data.Parser
 
         internal ParseContext<TToken> Branch(int offset, ParseEnvironment environment)
         {
-            return new ParseContext<TToken>(_tokens, environment, _offset + offset, _table);
+            return new ParseContext<TToken>(_tokens, environment, _offset + offset, TokenTable);
         }
 
         internal TToken GetToken(int position = 0)

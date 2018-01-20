@@ -46,7 +46,7 @@ namespace PS.Data.Parser
         public void Add<T>(T value)
         {
             var array = this[typeof(T[])].Enumerate<T>();
-            this[typeof(T[])] = array.Union(new[] { value });
+            this[typeof(T[])] = array.Union(new[] { value }).ToArray();
         }
 
         public ParseEnvironment Clone()

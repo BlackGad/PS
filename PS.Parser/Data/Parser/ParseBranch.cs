@@ -56,44 +56,31 @@ namespace PS.Data.Parser
 
         #region Members
 
-        public ParseBranch<TToken> Token(Func<TToken, ParseEnvironment, bool> factory)
+        public ParseBranch<TToken> Action(Action<ParseEnvironment> action = null)
         {
-            return Token(null, factory);
+            return Action(null, action);
         }
 
-        public ParseBranch<TToken> Token(string label, Func<TToken, ParseEnvironment, bool> factory)
+        public ParseBranch<TToken> Action(string label, Action<ParseEnvironment> action = null)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
-            var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
 
-            var aheadToken = Context.GetToken(currentOffset);
-
-            var assert = new AssertResultToken<TToken>
+            var assert = new AssertResultEmpty
             {
                 Label = label,
-                Index = Asserts.Count,
-                Token = aheadToken,
-                BranchName = BranchName
+                Index = Asserts.Count
             };
 
             Asserts.Add(assert);
 
             try
             {
-                if (aheadToken == null) assert.Error = new ParserException("Unexpected end of sequence.", BranchName);
-                else
-                {
-                    if (!factory(aheadToken, Environment))
-                    {
-                        assert.Error = new ParserException($"Unexpected token {aheadToken}.", BranchName);
-                    }
-                }
+                action?.Invoke(Environment);
             }
             catch (Exception e)
             {
                 assert.Error = new ParserException(null, BranchName, e);
             }
-
             return this;
         }
 
@@ -138,31 +125,51 @@ namespace PS.Data.Parser
             return this;
         }
 
-        public ParseBranch<TToken> Action(Action<ParseEnvironment> action = null)
+        public ParseBranch<TToken> Token(string token)
         {
-            return Action(null, action);
+            return Token(null, token);
         }
 
-        public ParseBranch<TToken> Action(string label, Action<ParseEnvironment> action = null)
+        public ParseBranch<TToken> Token(string label, string token)
         {
             if (Asserts.Any(a => a.Error != null)) return this;
+            var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
 
-            var assert = new AssertResultEmpty
+            var aheadToken = Context.GetToken(currentOffset);
+
+            var assert = new AssertResultToken<TToken>
             {
                 Label = label,
-                Index = Asserts.Count
+                Index = Asserts.Count,
+                Token = aheadToken,
+                BranchName = BranchName
             };
 
             Asserts.Add(assert);
 
             try
             {
-                action?.Invoke(Environment);
+                if (aheadToken == null) assert.Error = new ParserException("Unexpected end of sequence.", BranchName);
+                else
+                {
+                    var expectedToken = Context.TokenTable[token];
+                    if (expectedToken?.Equals(aheadToken) != true)
+                    {
+                        assert.Error = new ParserException($"Unexpected token '{aheadToken}'. " +
+                                                           $"'{expectedToken?.ToString() ?? "unknown"}' token expected.",
+                                                           BranchName);
+                    }
+                    else
+                    {
+                        Environment.Push(aheadToken);
+                    }
+                }
             }
             catch (Exception e)
             {
                 assert.Error = new ParserException(null, BranchName, e);
             }
+
             return this;
         }
 

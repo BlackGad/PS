@@ -58,7 +58,7 @@ namespace PS.Data.Predicate
 
             ctx.Sequence("EXPRESSION_CONDITION eos")
                .Rule(EXPRESSION_CONDITION)
-               .Token((t, env) => t.Type == TokenType.EOS);
+               .Token("eos");
 
             var s = ctx.ToString("d");
 
@@ -73,31 +73,11 @@ namespace PS.Data.Predicate
             return CheckToken(t, TokenType.Not, () => env.Peek<OperatorExpression>().Inverted = true);
         }
 
-        internal bool CheckOperator(JsonToken t, ParseEnvironment env)
-        {
-            return CheckToken(t, TokenType.Operator, () => env.Peek<OperatorExpression>().Name = t.Value);
-        }
-
-        internal bool CheckQueryOperator(JsonToken t, ParseEnvironment env)
-        {
-            return CheckToken(t, TokenType.Operator, () => ((RouteSubsetExpression)env.Peek<RouteExpression>()).Query = t.Value);
-        }
-
-        internal bool CheckRoute(JsonToken t, ParseEnvironment env)
-        {
-            return CheckToken(t, TokenType.Object, () => env.Peek<RouteExpression>().Route = Route.Parse(t.Value));
-        }
-
         internal bool CheckToken(JsonToken t, TokenType type, Action action)
         {
             if (t.Type != type) return false;
             action();
             return true;
-        }
-
-        internal bool CheckValue(JsonToken t, ParseEnvironment env)
-        {
-            return CheckToken(t, TokenType.Value, () => env.Peek<OperatorExpression>().Value = t.Value);
         }
 
         internal void CommitContextRoute(ParseEnvironment env)
@@ -123,24 +103,26 @@ namespace PS.Data.Predicate
         private void EXPRESSION(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("object(route) OPERATION")
-               .Action("Create route", env => env.Push(new RouteExpression()))
-               .Token(CheckRoute)
+               .Action("Create expression", env => env.Push(new RouteExpression()))
+               .Token("object").Action("Extract route", env => { env.Peek<RouteExpression>().Route = Route.Parse(env.Peek<JsonToken>().Value); })
                .Rule(OPERATION)
                .Action("Commit route", CommitContextRoute);
 
             ctx.Sequence("object(route) operator EXPRESSION_CONDITION")
-               .Action("Create subset route", env => env.Push<RouteExpression>(new RouteSubsetExpression()))
-               .Token(CheckRoute)
-               .Token(CheckQueryOperator)
+               .Action("Create subset expression", env => env.Push<RouteExpression>(new RouteSubsetExpression()))
+               .Token("object").Action("Extract route", env => { env.Peek<RouteExpression>().Route = Route.Parse(env.Peek<JsonToken>().Value); })
+               .Token("operator")
+               .Action("Extract query operator", env => { ((RouteSubsetExpression)env.Peek<RouteExpression>()).Query = env.Peek<JsonToken>().Value; })
                .Action("Push subset route", SaveContextRoute)
                .Rule(EXPRESSION_CONDITION)
                .Action("Pop subset route", RestoreContextRoute)
                .Action("Commit route", CommitContextRoute);
 
             ctx.Sequence("object(route) operator EXPRESSION_CONDITION OPERATION")
-               .Action("Create subset route", env => env.Push<RouteExpression>(new RouteSubsetExpression()))
-               .Token(CheckRoute)
-               .Token(CheckQueryOperator)
+               .Action("Create subset expression", env => env.Push<RouteExpression>(new RouteSubsetExpression()))
+               .Token("object").Action("Extract route", env => { env.Peek<RouteExpression>().Route = Route.Parse(env.Peek<JsonToken>().Value); })
+               .Token("operator")
+               .Action("Extract query operator", env => { ((RouteSubsetExpression)env.Peek<RouteExpression>()).Query = env.Peek<JsonToken>().Value; })
                .Action("Save subset route", SaveContextRoute)
                .Rule(EXPRESSION_CONDITION)
                .Action("Pop subset route", RestoreContextRoute)
@@ -151,12 +133,12 @@ namespace PS.Data.Predicate
         private void EXPRESSION_CONDITION(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("and EXPRESSION_CONDITION_BODY")
-               .Token((t, env) => t.Type == TokenType.And)
+               .Token("and")
                .Rule(EXPRESSION_CONDITION_BODY)
                .Action("Commit AND expression", env => env.Push(new LogicalExpression(LogicalOperator.And, env.Peek<RouteExpression[]>())));
 
             ctx.Sequence("or EXPRESSION_CONDITION_BODY")
-               .Token((t, env) => t.Type == TokenType.Or)
+               .Token("or")
                .Rule(EXPRESSION_CONDITION_BODY)
                .Action("Commit OR expression", env => env.Push(new LogicalExpression(LogicalOperator.Or, env.Peek<RouteExpression[]>())));
 
@@ -168,10 +150,10 @@ namespace PS.Data.Predicate
         private void EXPRESSION_CONDITION_BODY(ParseContext<JsonToken> ctx)
         {
             ctx.Sequence("ArrayStart EXPRESSION_LIST ArrayEnd")
-               .Token((t, env) => t.Type == TokenType.ArrayStart)
-               .Action("Create route list", env => env.Push(new RouteExpression[] { }))
+               .Token("[")
+               .Action("Create expression list", env => env.Push(new RouteExpression[] { }))
                .Rule(EXPRESSION_LIST)
-               .Token((t, env) => t.Type == TokenType.ArrayEnd);
+               .Token("]");
         }
 
         private void EXPRESSION_LIST(ParseContext<JsonToken> ctx)
@@ -192,15 +174,17 @@ namespace PS.Data.Predicate
         {
             ctx.Sequence("not operator value")
                .Action("Create operator", env => env.Push(new OperatorExpression()))
-               .Token(CheckNotOperator)
-               .Token(CheckOperator)
-               .Token(CheckValue)
+               .Token("not").Action(env => { env.Peek<OperatorExpression>().Inverted = true; })
+               .Token("operator")
+               .Action("Extract operator", env => { env.Peek<OperatorExpression>().Name = env.Peek<JsonToken>().Value; })
+               .Token("value").Action("Extract value", env => { env.Peek<OperatorExpression>().Value = env.Peek<JsonToken>().Value; })
                .Action("Commit operator", env => env.Peek<RouteExpression>().Operator = env.Peek<OperatorExpression>());
 
             ctx.Sequence("operator value")
                .Action("Create operator", env => env.Push(new OperatorExpression()))
-               .Token(CheckOperator)
-               .Token(CheckValue)
+               .Token("operator")
+               .Action("Extract operator", env => { env.Peek<OperatorExpression>().Name = env.Peek<JsonToken>().Value; })
+               .Token("value").Action("Extract value", env => { env.Peek<OperatorExpression>().Value = env.Peek<JsonToken>().Value; })
                .Action("Commit operator", env => env.Peek<RouteExpression>().Operator = env.Peek<OperatorExpression>());
         }
 
