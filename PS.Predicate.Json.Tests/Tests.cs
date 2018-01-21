@@ -9,6 +9,7 @@ using NUnit.Framework;
 using PS.Data.Predicate;
 using PS.Data.Predicate.Extensions;
 using PS.Data.Predicate.Logic;
+using PS.Data.Predicate.New;
 using PS.Predicate.Tests.TestReferences.ExpressionBuilderTests;
 using PS.Predicate.Tests.TestReferences.ExpressionBuilderTests.Model;
 
@@ -22,6 +23,9 @@ namespace PS.Predicate.Json.Tests
         [Test]
         public void Parser()
         {
+
+            var sss = new Test();
+            return;
             var scheme = Scheme.Create<License>();
 
             scheme.Routes

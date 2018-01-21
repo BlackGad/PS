@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using PS.Data.Logic;
 using PS.Data.Parser;
 using PS.Data.Predicate.Logic;
-using PS.Extensions;
 using PS.Navigation;
 using LogicalExpression = PS.Data.Predicate.Logic.LogicalExpression;
 
@@ -132,7 +131,7 @@ namespace PS.Data.Predicate
                .Commit(env => env.Push(env.Pop<List<IExpression>>().ToArray()));
 
             ctx.Sequence("EMPTY")
-               .Commit(env=> env.Push(Enumerable.Empty<IExpression>().ToArray()));
+               .Commit(env => env.Push(Enumerable.Empty<IExpression>().ToArray()));
         }
 
         private static void OPERATION(ParseContext<JsonToken> ctx)
@@ -191,7 +190,7 @@ namespace PS.Data.Predicate
             var ctx = ParseContext<JsonToken>.Parse(_tokens, table);
 
             ctx.Sequence("EXPRESSION_CONDITION eos")
-               .Rule(EXPRESSION_CONDITION).Action((env, rule)=> env.Push(rule.Pop<IExpression>()))
+               .Rule(EXPRESSION_CONDITION).Action((env, rule) => env.Push(rule.Pop<IExpression>()))
                .Token("eos");
 
             var s = ctx.ToString("d");
@@ -201,6 +200,12 @@ namespace PS.Data.Predicate
 
             throw new InvalidOperationException();
         }
+
+        #endregion
+
+        #region Nested type: Tokens
+
+        
 
         #endregion
     }

@@ -6,7 +6,11 @@ namespace PS.Data.Predicate
     {
         #region Constructors
 
-        public JsonToken(TokenType type, string value = null)
+        public JsonToken(TokenType type) : this(type, null)
+        {
+        }
+
+        public JsonToken(TokenType type, string value)
         {
             Value = value;
             Type = type;

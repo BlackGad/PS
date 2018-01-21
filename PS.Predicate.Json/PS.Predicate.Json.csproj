@@ -44,10 +44,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Predicate\New\Rules.cs" />
     <Compile Include="Data\Predicate\ExpressionJsonConverter.cs" />
     <Compile Include="Data\Predicate\JsonPredicateModelProvider.cs" />
     <Compile Include="Data\Predicate\JsonTokenizer.cs" />
     <Compile Include="Data\Predicate\JsonToken.cs" />
+    <Compile Include="Data\Predicate\New\Parser.cs" />
+    <Compile Include="Data\Predicate\New\Rule.cs" />
+    <Compile Include="Data\Predicate\New\RuleSequence.cs" />
+    <Compile Include="Data\Predicate\New\Sequence.cs" />
+    <Compile Include="Data\Predicate\New\Test.cs" />
+    <Compile Include="Data\Predicate\New\Tokens.cs" />
+    <Compile Include="Data\Predicate\New\BodyScaner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\Predicate\TokenType.cs" />
   </ItemGroup>
