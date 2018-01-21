@@ -141,11 +141,15 @@ namespace PS.Data.Predicate.Serialization
 
         private static void UpdateCachedExpressionTypes(Assembly assembly)
         {
+            UpdateCachedExpressionTypes(assembly.GetTypesSafely().ToArray());
+        }
+
+        private static void UpdateCachedExpressionTypes(params Type[] types)
+        {
             lock (CachedExpressionTypes)
             {
-                var expressionTypes = assembly.GetTypesSafely().Where(t => typeof(IExpression).IsAssignableFrom(t) &&
-                                                                           !t.IsAbstract);
-                foreach (var expressionType in expressionTypes)
+                types = types.Where(t => typeof(IExpression).IsAssignableFrom(t) && !t.IsAbstract).ToArray();
+                foreach (var expressionType in types)
                 {
                     var serializationNodeName = GetExpressionName(expressionType);
                     var record = CachedExpressionTypes.Ensure(serializationNodeName, () => new ExpressionTypeCache(serializationNodeName));
@@ -162,11 +166,15 @@ namespace PS.Data.Predicate.Serialization
         {
             CachedExpressionTypes = new Dictionary<string, ExpressionTypeCache>();
 
-            AppDomain.CurrentDomain.AssemblyLoad += (sender, args) => UpdateCachedExpressionTypes(args.LoadedAssembly);
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                UpdateCachedExpressionTypes(assembly);
-            }
+            //AppDomain.CurrentDomain.AssemblyLoad += (sender, args) => UpdateCachedExpressionTypes(args.LoadedAssembly);
+            //foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            //{
+            //    UpdateCachedExpressionTypes(assembly);
+            //}
+
+            UpdateCachedExpressionTypes(typeof(LogicalExpression),
+                                        typeof(RouteExpression),
+                                        typeof(RouteSubsetExpression));
         }
 
         #endregion
