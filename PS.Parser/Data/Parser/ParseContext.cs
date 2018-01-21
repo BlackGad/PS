@@ -31,24 +31,23 @@ namespace PS.Data.Parser
 
         #region Constructors
 
-        private ParseContext(IEnumerable<TToken> tokens, TokenTable<TToken> table) : this(new ParseEnvironment(), table)
+        private ParseContext(IEnumerable<TToken> tokens, TokenTable<TToken> table) : this(table)
         {
             if (tokens == null) throw new ArgumentNullException(nameof(tokens));
             _tokens = new List<TToken>(tokens);
         }
 
-        private ParseContext(ParseEnvironment env, TokenTable<TToken> table)
+        private ParseContext(TokenTable<TToken> table)
         {
-            if (env == null) throw new ArgumentNullException(nameof(env));
             if (table == null) throw new ArgumentNullException(nameof(table));
 
             TokenTable = table;
             _sequenceChecks = new List<ParseBranch<TToken>>();
 
-            Environment = env;
+            Environment = new ParseEnvironment();
         }
 
-        private ParseContext(List<TToken> tokens, ParseEnvironment env, int offset, TokenTable<TToken> table) : this(env, table)
+        private ParseContext(List<TToken> tokens, int offset, TokenTable<TToken> table) : this(table)
         {
             _tokens = tokens;
             _offset = offset;
@@ -120,7 +119,7 @@ namespace PS.Data.Parser
 
         public ParseBranch<TToken> Sequence(string sequenceName, [CallerMemberName] string branchName = null)
         {
-            var result = new ParseBranch<TToken>(this, Environment, branchName, sequenceName);
+            var result = new ParseBranch<TToken>(this, Environment.Clone(), branchName, sequenceName);
             _sequenceChecks.Add(result);
             return result;
         }
@@ -130,9 +129,9 @@ namespace PS.Data.Parser
             return ToString(format, CultureInfo.InvariantCulture);
         }
 
-        internal ParseContext<TToken> Branch(int offset, ParseEnvironment environment)
+        internal ParseContext<TToken> Branch(int offset)
         {
-            return new ParseContext<TToken>(_tokens, environment, _offset + offset, TokenTable);
+            return new ParseContext<TToken>(_tokens, _offset + offset, TokenTable);
         }
 
         internal TToken GetToken(int position = 0)
@@ -176,19 +175,20 @@ namespace PS.Data.Parser
                     builder.AppendLine($"{GenerateDGraphVertexId(id)} -> {GenerateDGraphVertexId(assert.Id)}");
                 }
 
-                var tokenAssertEmpty = assert as AssertResultEmpty;
-                if (tokenAssertEmpty != null)
-                {
-                    var label = tokenAssertEmpty.Label ?? "Empty";
-                    builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [label=\"{label}\"]");
-                    builder.AppendLine($"{GenerateDGraphVertexId(id)} -> {GenerateDGraphVertexId(assert.Id)}");
-                }
+                //var tokenAssertEmpty = assert as AssertResultEmpty;
+                //if (tokenAssertEmpty != null)
+                //{
+                //    var label = tokenAssertEmpty.Label ?? "Empty";
+                //    builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)} [label=\"{label}\"]");
+                //    builder.AppendLine($"{GenerateDGraphVertexId(id)} -> {GenerateDGraphVertexId(assert.Id)}");
+                //}
             }
 
             builder.AppendLine($"subgraph cluster_{GenerateDGraphVertexId(Guid.NewGuid())} {{");
             builder.AppendLine($"label = \"{branch.AssertName}\"");
             foreach (var assert in branch.Asserts)
             {
+                if(assert is AssertResultEmpty) continue;
                 builder.AppendLine($"{GenerateDGraphVertexId(assert.Id)}");
             }
             builder.AppendLine("}");

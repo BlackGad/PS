@@ -1,12 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using PS.Extensions;
 
 namespace PS.Data.Parser
 {
     public class ParseEnvironment
     {
+        #region Static members
+
+        private static string CreateKey<T>(string key)
+        {
+            return typeof(T).Name + (key ?? string.Empty);
+        }
+
+        #endregion
+
         private readonly Dictionary<object, object> _environment;
 
         #region Constructors
@@ -23,31 +30,9 @@ namespace PS.Data.Parser
 
         public Guid Id { get; }
 
-        public object this[object key]
-        {
-            get
-            {
-                if (_environment.ContainsKey(key)) return _environment[key];
-                return null;
-            }
-            set
-            {
-                if (_environment.ContainsKey(key)) _environment[key] = value;
-                else _environment.Add(key, value);
-
-                if (value == null) _environment.Remove(key);
-            }
-        }
-
         #endregion
 
         #region Members
-
-        public void Add<T>(T value)
-        {
-            var array = this[typeof(T[])].Enumerate<T>();
-            this[typeof(T[])] = array.Union(new[] { value }).ToArray();
-        }
 
         public ParseEnvironment Clone()
         {
@@ -66,21 +51,45 @@ namespace PS.Data.Parser
             return env;
         }
 
-        public T Peek<T>()
+        public T Get<T>(Func<T> factory = null)
         {
-            return (T)this[typeof(T)];
+            return Get(null, factory);
+        }
+
+        public T Get<T>(string key, Func<T> factory = null)
+        {
+            key = CreateKey<T>(key);
+            if (_environment.ContainsKey(key)) return (T)_environment[key];
+            factory = factory ?? Activator.CreateInstance<T>;
+            var result = factory();
+            _environment.Add(key, result);
+            return result;
         }
 
         public T Pop<T>()
         {
-            var result = Peek<T>();
-            Push(default(T));
-            return result;
+            return Pop<T>(null);
+        }
+
+        public T Pop<T>(string key)
+        {
+            key = CreateKey<T>(key);
+            if (!_environment.ContainsKey(key)) return default(T);
+            var result = _environment[key];
+            _environment.Remove(key);
+            return (T)result;
         }
 
         public void Push<T>(T value)
         {
-            this[typeof(T)] = value;
+            Push(null, value);
+        }
+
+        public void Push<T>(string key, T value)
+        {
+            key = CreateKey<T>(key);
+            if (_environment.ContainsKey(key)) _environment[key] = value;
+            else _environment.Add(key, value);
         }
 
         #endregion

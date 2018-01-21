@@ -44,6 +44,7 @@
     <Compile Include="Data\Parser\AssertResultBranch.cs" />
     <Compile Include="Data\Parser\AssertResultEmpty.cs" />
     <Compile Include="Data\Parser\AssertResultToken.cs" />
+    <Compile Include="Data\Parser\IParseBranch.cs" />
     <Compile Include="Data\Parser\ParseBranch.cs" />
     <Compile Include="Data\Parser\ParseContext.cs" />
     <Compile Include="Data\Parser\ParseEnvironment.cs" />

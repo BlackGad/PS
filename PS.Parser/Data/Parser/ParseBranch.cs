@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PS.Data.Parser
 {
-    public class ParseBranch<TToken> where TToken : IToken
+    public class ParseBranch<TToken> : IParseBranch<TToken> where TToken : IToken
     {
         #region Constructors
 
@@ -15,7 +15,7 @@ namespace PS.Data.Parser
             BranchName = branchName;
             AssertName = assertName;
             Asserts = new List<AssertResult>();
-            Environment = environment.Clone();
+            Environment = environment;
         }
 
         #endregion
@@ -54,66 +54,30 @@ namespace PS.Data.Parser
 
         #endregion
 
-        #region Members
+        #region IParseBranch<TToken> Members
 
-        public ParseBranch<TToken> Action(Action<ParseEnvironment> action = null)
+        public ParseRuleBranch<TToken> Rule(Action<ParseContext<TToken>> factory)
         {
-            return Action(null, action);
-        }
-
-        public ParseBranch<TToken> Action(string label, Action<ParseEnvironment> action = null)
-        {
-            if (Asserts.Any(a => a.Error != null)) return this;
-
-            var assert = new AssertResultEmpty
-            {
-                Label = label,
-                Index = Asserts.Count
-            };
-
-            Asserts.Add(assert);
-
-            try
-            {
-                action?.Invoke(Environment);
-            }
-            catch (Exception e)
-            {
-                assert.Error = new ParserException(null, BranchName, e);
-            }
-            return this;
-        }
-
-        public ParseBranch<TToken> Rule(Action<ParseContext<TToken>> factory)
-        {
-            return Rule(null, factory);
-        }
-
-        public ParseBranch<TToken> Rule(string label, Action<ParseContext<TToken>> factory)
-        {
-            if (Asserts.Any(a => a.Error != null)) return this;
+            if (Asserts.Any(a => a.Error != null)) return new ParseRuleBranch<TToken>(this);
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
             var assert = new AssertResultBranch<TToken>
             {
-                Label = label,
                 Index = Asserts.Count,
                 BranchName = BranchName
             };
 
             Asserts.Add(assert);
-
+            var body = factory.Method.ToString();
+            body = body.Substring(5, body.IndexOf('(') - 5);
+            _stack111.Push(body);
+            Console.WriteLine(_stack111.Aggregate(string.Empty, (agg, b) => b + " -> " + agg));
             try
             {
-                var localContext = Context.Branch(currentOffset, Environment);
+                var localContext = Context.Branch(currentOffset);
                 factory(localContext);
 
-                ParseBranch<TToken> branch;
-                if (localContext.SuccessBranch != null)
-                {
-                    branch = localContext.SuccessBranch;
-                    branch.Environment.Clone(Environment);
-                }
-                else branch = localContext.FailedBranch;
+                var branch = localContext.SuccessBranch ?? localContext.FailedBranch;
+
                 if (branch != null) assert.Branch = branch;
                 else assert.Error = new ParserException("There is no sequence checks", BranchName);
             }
@@ -121,25 +85,22 @@ namespace PS.Data.Parser
             {
                 assert.Error = new ParserException(null, BranchName, e);
             }
+            _stack111.Pop();
+            Console.WriteLine("<-" + (assert.Error == null ? "Success" : "Error"));
+            //Console.WriteLine(_stack111.Aggregate(string.Empty, (agg, b) => b + " -> " + agg));
 
-            return this;
+            return new ParseRuleBranch<TToken>(this, assert.Branch.Environment, assert.Error != null);
         }
 
-        public ParseBranch<TToken> Token(string token)
+        public ParseTokenBranch<TToken> Token(string token)
         {
-            return Token(null, token);
-        }
-
-        public ParseBranch<TToken> Token(string label, string token)
-        {
-            if (Asserts.Any(a => a.Error != null)) return this;
+            if (Asserts.Any(a => a.Error != null)) return new ParseTokenBranch<TToken>(this);
             var currentOffset = Asserts.Aggregate(0, (agg, a) => agg + a.Length);
 
             var aheadToken = Context.GetToken(currentOffset);
 
             var assert = new AssertResultToken<TToken>
             {
-                Label = label,
                 Index = Asserts.Count,
                 Token = aheadToken,
                 BranchName = BranchName
@@ -159,10 +120,6 @@ namespace PS.Data.Parser
                                                            $"'{expectedToken?.ToString() ?? "unknown"}' token expected.",
                                                            BranchName);
                     }
-                    else
-                    {
-                        Environment.Push(aheadToken);
-                    }
                 }
             }
             catch (Exception e)
@@ -170,12 +127,136 @@ namespace PS.Data.Parser
                 assert.Error = new ParserException(null, BranchName, e);
             }
 
-            return this;
+            return new ParseTokenBranch<TToken>(this, aheadToken, assert.Error != null);
         }
+
+        public void Commit(Action<ParseEnvironment> action)
+        {
+            if (Asserts.Any(a => a.Error != null)) return;
+
+            var assert = new AssertResultEmpty
+            {
+                Index = Asserts.Count
+            };
+
+            Asserts.Add(assert);
+
+            try
+            {
+                action?.Invoke(Environment);
+            }
+            catch (Exception e)
+            {
+                assert.Error = new ParserException(null, BranchName, e);
+            }
+        }
+
+        #endregion
+
+        #region Members
 
         internal int GetTokensLength()
         {
             return Asserts.Aggregate(0, (agg, a) => agg + a.Length);
+        }
+
+        #endregion
+
+        private static readonly Stack<string> _stack111 = new Stack<string>();
+    }
+
+    public class ParseRuleBranch<TToken> : IParseBranch<TToken> where TToken : IToken
+    {
+        private readonly ParseBranch<TToken> _branch;
+        private readonly ParseEnvironment _ruleEnvironment;
+        private readonly bool _skip;
+
+        #region Constructors
+
+        internal ParseRuleBranch(ParseBranch<TToken> branch, ParseEnvironment ruleEnvironment = null, bool skip = true)
+        {
+            _branch = branch;
+            _ruleEnvironment = ruleEnvironment;
+            _skip = skip;
+        }
+
+        #endregion
+
+        #region IParseBranch<TToken> Members
+
+        public ParseRuleBranch<TToken> Rule(Action<ParseContext<TToken>> factory)
+        {
+            return _branch.Rule(factory);
+        }
+
+        public ParseTokenBranch<TToken> Token(string token)
+        {
+            return _branch.Token(token);
+        }
+
+        public void Commit(Action<ParseEnvironment> action)
+        {
+            _branch.Commit(action);
+        }
+
+        #endregion
+
+        #region Members
+
+        public ParseBranch<TToken> Action(Action<ParseEnvironment, ParseEnvironment> action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+            if (!_skip) action(_branch.Environment, _ruleEnvironment);
+            return _branch;
+        }
+
+        #endregion
+    }
+
+    public class ParseTokenBranch<TToken> : IParseBranch<TToken> where TToken : IToken
+    {
+        private readonly TToken _aheadToken;
+        private readonly ParseBranch<TToken> _branch;
+        private readonly bool _skip;
+
+        #region Constructors
+
+        internal ParseTokenBranch(ParseBranch<TToken> branch, TToken aheadToken = default(TToken), bool skip = true)
+        {
+            if (branch == null) throw new ArgumentNullException(nameof(branch));
+            _branch = branch;
+            _aheadToken = aheadToken;
+            _skip = skip;
+        }
+
+        #endregion
+
+        #region IParseBranch<TToken> Members
+
+        public void Commit(Action<ParseEnvironment> action)
+        {
+            _branch.Commit(action);
+        }
+
+        public ParseRuleBranch<TToken> Rule(Action<ParseContext<TToken>> factory)
+        {
+            return _branch.Rule(factory);
+        }
+
+        public ParseTokenBranch<TToken> Token(string token)
+        {
+            return _branch.Token(token);
+        }
+
+        #endregion
+
+        #region Members
+
+        public ParseBranch<TToken> Action(Action<ParseEnvironment, TToken> action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+            if (!_skip) action(_branch.Environment, _aheadToken);
+            return _branch;
         }
 
         #endregion

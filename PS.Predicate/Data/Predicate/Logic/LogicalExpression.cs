@@ -7,6 +7,7 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using PS.Data.Logic;
 using PS.Data.Predicate.Serialization;
+using PS.Extensions;
 
 namespace PS.Data.Predicate.Logic
 {
@@ -16,9 +17,9 @@ namespace PS.Data.Predicate.Logic
     {
         #region Constructors
 
-        public LogicalExpression(LogicalOperator op, IExpression[] expressions)
+        public LogicalExpression(LogicalOperator op, IEnumerable<IExpression> expressions)
         {
-            Expressions = expressions;
+            Expressions = expressions.Enumerate().ToArray();
             Operator = op;
         }
 

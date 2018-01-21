@@ -1,38 +1,24 @@
-﻿{ 
-    "and" : 
-    [	
-        { "id": { "equal": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }},
-        { "template.name" : { "not" : {"match": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }}},
-        {
-            "claims": 
-            {
-                "any": 
-                [
-                    { "type": { "equal": "claim type" } },
-                    { "value": { "equal": "claim value" } }
-                ]
-            }
-        },
+﻿[	
+    { "id": { "equal": "FA36C38F-C1FF-4740-8F1E-5D0D5D76E508" }},
+    { 
+        "claims":
         { 
-            "claims":
+            "count" : 
             { 
-                "count" : 
-                { 
-                    "or" :
-                    [
-                        { 
-                            "and" : 
-                            [
-                                { "type": { "equal": "1" } },
-                                { "value": { "equal": "2" } }
-                            ]
-                        },
-                        { "type": { "equal": "3" } },
-                        { "value": { "equal": "4" } }
-                    ]
-                },
-                "equal": "10"
-            } 
-        }
-    ]
-}
+                "or" :
+                [
+                    { 
+                        "and" : 
+                        [
+                            { "type": { "equal": "1" } },
+                            { "value": { "equal": "2" } }
+                        ]
+                    },
+                    { "type": { "equal": "3" } },
+                    { "value": { "equal": "4" } }
+                ]
+            },
+            "equal": "10"
+        } 
+    }
+]
