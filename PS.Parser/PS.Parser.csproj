@@ -50,6 +50,8 @@
     <Compile Include="Data\Parser\ParseEnvironment.cs" />
     <Compile Include="Data\Parser\ParserException.cs" />
     <Compile Include="Data\Parser\IToken.cs" />
+    <Compile Include="Data\Parser\ParseRuleBranch.cs" />
+    <Compile Include="Data\Parser\ParseTokenBranch.cs" />
     <Compile Include="Data\Parser\TokenTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
