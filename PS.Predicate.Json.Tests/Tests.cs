@@ -3,8 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using PS.Data.Predicate;
 using PS.Data.Predicate.Extensions;
@@ -37,9 +35,16 @@ namespace PS.Predicate.Json.Tests
 
             //Parser
             var json = File.ReadAllText(@"D:\GitHub\PS\PS.Predicate.Json.Tests\TextFile1.txt");
-            var jToken = (JToken)JsonConvert.DeserializeObject(json);
-            var provider = new JTokenParser(jToken);
-            var expression = provider.Parse();
+
+            var jsonSerializerSettings = new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>
+                {
+                    new ExpressionJsonConverter()
+                }
+            };
+
+            var expression = JsonConvert.DeserializeObject<IExpression>(json, jsonSerializerSettings);
 
             //XML
             var serializer = new XmlSerializer(expression.GetType());
@@ -52,16 +57,6 @@ namespace PS.Predicate.Json.Tests
                     var result = serializer.Deserialize(reader);
                 }
             }
-
-            var jsonSerializerSettings = new JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter>
-                {
-                    new ExpressionJsonConverter()
-                },
-                Formatting = Formatting.Indented,
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
 
             var serialized = JsonConvert.SerializeObject(expression, jsonSerializerSettings);
             var deserialized = JsonConvert.DeserializeObject<IExpression>(serialized, jsonSerializerSettings);

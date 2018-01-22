@@ -12,21 +12,21 @@ namespace PS.Data.Predicate
 {
     /// <summary>
     ///     Grammar:
-    ///     S -> EXPRESSION_CONDITION eos
+    ///     S -> EXPRESSION eos     
     ///     EXPRESSION_CONDITION -> and EXPRESSION_CONDITION_BODY
     ///     EXPRESSION_CONDITION -> or EXPRESSION_CONDITION_BODY
     ///     EXPRESSION_CONDITION -> EXPRESSION_CONDITION_BODY
     ///     EXPRESSION_CONDITION_BODY -> ArrayStart EXPRESSION_LIST ArrayEnd
-    ///     EXPRESSION_LIST -> EXPRESSION_CONDITION EXPRESSION_LIST
     ///     EXPRESSION_LIST -> EXPRESSION EXPRESSION_LIST
     ///     EXPRESSION_LIST -> EMPTY
     ///     EXPRESSION -> object(route) OPERATION
+    ///     EXPRESSION -> EXPRESSION_CONDITION
     ///     EXPRESSION -> object(route) operator EXPRESSION_CONDITION
     ///     EXPRESSION -> object(route) operator EXPRESSION_CONDITION OPERATION
     ///     OPERATION -> not operator value
     ///     OPERATION -> operator value
     /// </summary>
-    public class JTokenParser
+    internal class JTokenParser
     {
         #region Static members
 
@@ -64,6 +64,9 @@ namespace PS.Data.Predicate
                    Operator = env.Pop<OperatorExpression>(),
                    Subset = env.Pop<IExpression>(nameof(RouteSubsetExpression.Subset))
                }));
+
+            ctx.Sequence("EXPRESSION_CONDITION")
+               .Rule(EXPRESSION_CONDITION).Action((env, rule) => env.Push(rule.Pop<IExpression>()));
         }
 
         private static void EXPRESSION_CONDITION(ParseContext<JTokenParserToken> ctx)
@@ -107,11 +110,6 @@ namespace PS.Data.Predicate
         {
             ctx.Sequence("EXPRESSION EXPRESSION_LIST")
                .Rule(EXPRESSION).Action((env, rule) => env.Get<List<IExpression>>().Add(rule.Pop<IExpression>()))
-               .Rule(EXPRESSION_LIST).Action((env, rule) => env.Get<List<IExpression>>().AddRange(rule.Pop<IExpression[]>()))
-               .Commit(env => env.Push(env.Pop<List<IExpression>>().ToArray()));
-
-            ctx.Sequence("EXPRESSION_CONDITION EXPRESSION_LIST")
-               .Rule(EXPRESSION_CONDITION).Action((env, rule) => env.Get<List<IExpression>>().Add(rule.Pop<IExpression>()))
                .Rule(EXPRESSION_LIST).Action((env, rule) => env.Get<List<IExpression>>().AddRange(rule.Pop<IExpression[]>()))
                .Commit(env => env.Push(env.Pop<List<IExpression>>().ToArray()));
 
@@ -174,8 +172,8 @@ namespace PS.Data.Predicate
 
             var ctx = ParseContext<JTokenParserToken>.Parse(_tokens, table);
 
-            ctx.Sequence("EXPRESSION_CONDITION eos")
-               .Rule(EXPRESSION_CONDITION).Action((env, rule) => env.Push(rule.Pop<IExpression>()))
+            ctx.Sequence("EXPRESSION eos")
+               .Rule(EXPRESSION).Action((env, rule) => env.Push(rule.Pop<IExpression>()))
                .Token("eos");
 
             if (ctx.FailedBranch != null) throw ctx.FailedBranch.Error;
