@@ -10,49 +10,49 @@ namespace PS.Data.Predicate
     {
         #region Members
 
-        public JsonToken[] Tokenize(JToken jToken)
+        public JTokenParserToken[] Tokenize(JToken jToken)
         {
             if (jToken == null) throw new ArgumentNullException(nameof(jToken));
-            return TokenizeJToken(jToken).Union(new[] { new JsonToken(TokenType.EOS) }).ToArray();
+            return TokenizeJToken(jToken).Union(new[] { new JTokenParserToken(TokenType.EOS) }).ToArray();
         }
 
-        private IEnumerable<JsonToken> TokenizeJArray(JArray array)
+        private IEnumerable<JTokenParserToken> TokenizeJArray(JArray array)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
 
-            var result = new List<JsonToken>
+            var result = new List<JTokenParserToken>
             {
-                new JsonToken(TokenType.ArrayStart)
+                new JTokenParserToken(TokenType.ArrayStart)
             };
 
             foreach (var item in array)
             {
                 result.AddRange(TokenizeJToken(item));
             }
-            result.Add(new JsonToken(TokenType.ArrayEnd));
+            result.Add(new JTokenParserToken(TokenType.ArrayEnd));
 
             return result;
         }
 
-        private IEnumerable<JsonToken> TokenizeJObject(JObject jObject)
+        private IEnumerable<JTokenParserToken> TokenizeJObject(JObject jObject)
         {
-            var result = new List<JsonToken>();
+            var result = new List<JTokenParserToken>();
             var properties = jObject.Properties().ToList();
             foreach (var property in properties)
             {
-                JsonToken jsonToken;
+                JTokenParserToken jsonToken;
 
                 if (string.Equals(property.Name, "not", StringComparison.InvariantCultureIgnoreCase))
-                    jsonToken = new JsonToken(TokenType.Not);
+                    jsonToken = new JTokenParserToken(TokenType.Not);
                 else if (properties.Count > 1 || property.Value is JValue)
-                    jsonToken = new JsonToken(TokenType.Operator, property.Name);
+                    jsonToken = new JTokenParserToken(TokenType.Operator, property.Name);
                 else if (string.Equals(property.Name, "and", StringComparison.InvariantCultureIgnoreCase))
-                    jsonToken = new JsonToken(TokenType.And);
+                    jsonToken = new JTokenParserToken(TokenType.And);
                 else if (string.Equals(property.Name, "or", StringComparison.InvariantCultureIgnoreCase))
-                    jsonToken = new JsonToken(TokenType.Or);
+                    jsonToken = new JTokenParserToken(TokenType.Or);
                 else if (properties.Count == 1 && property.Value is JArray)
-                    jsonToken = new JsonToken(TokenType.Operator, property.Name);
-                else jsonToken = new JsonToken(TokenType.Object, property.Name);
+                    jsonToken = new JTokenParserToken(TokenType.Operator, property.Name);
+                else jsonToken = new JTokenParserToken(TokenType.Object, property.Name);
 
                 result.Add(jsonToken);
                 result.AddRange(TokenizeJToken(property.Value));
@@ -60,7 +60,7 @@ namespace PS.Data.Predicate
             return result;
         }
 
-        private IEnumerable<JsonToken> TokenizeJToken(object obj)
+        private IEnumerable<JTokenParserToken> TokenizeJToken(object obj)
         {
             var token = obj as JToken;
             if (token == null) throw new InvalidOperationException();
@@ -77,11 +77,11 @@ namespace PS.Data.Predicate
             throw new NotSupportedException();
         }
 
-        private IEnumerable<JsonToken> TokenizeJValue(JValue jObject)
+        private IEnumerable<JTokenParserToken> TokenizeJValue(JValue jObject)
         {
-            return new List<JsonToken>
+            return new List<JTokenParserToken>
             {
-                new JsonToken(TokenType.Value, jObject.ToString(Formatting.None).Trim('\"', '\''))
+                new JTokenParserToken(TokenType.Value, jObject.ToString(Formatting.None).Trim('\"', '\''))
             };
         }
 

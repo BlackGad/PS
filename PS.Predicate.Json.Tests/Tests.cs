@@ -38,8 +38,8 @@ namespace PS.Predicate.Json.Tests
             //Parser
             var json = File.ReadAllText(@"D:\GitHub\PS\PS.Predicate.Json.Tests\TextFile1.txt");
             var jToken = (JToken)JsonConvert.DeserializeObject(json);
-            var provider = new JsonPredicateModelProvider(jToken);
-            var expression = provider.Provide();
+            var provider = new JTokenParser(jToken);
+            var expression = provider.Parse();
 
             //XML
             var serializer = new XmlSerializer(expression.GetType());

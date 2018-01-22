@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using PS.Data.Logic;
 using PS.Data.Parser;
 using PS.Data.Predicate.Logic;
-using PS.Extensions;
 using PS.Navigation;
 using LogicalExpression = PS.Data.Predicate.Logic.LogicalExpression;
 
@@ -27,26 +26,11 @@ namespace PS.Data.Predicate
     ///     OPERATION -> not operator value
     ///     OPERATION -> operator value
     /// </summary>
-    public class JsonPredicateModelProvider
+    public class JTokenParser
     {
         #region Static members
 
-        //internal static void RestoreContextRoute(ParseEnvironment env)
-        //{
-        //    var snapshot = (Tuple<RouteExpression[], RouteExpression>)env[env.Id];
-        //    ((RouteSubsetExpression)snapshot.Item2).Subset = env.Get<LogicalExpression>();
-
-        //    env.Push(snapshot.Item1);
-        //    env.Push(snapshot.Item2);
-        //    env[env.Id] = null;
-        //}
-
-        //internal static void SaveContextRoute(ParseEnvironment env)
-        //{
-        //    env[env.Id] = new Tuple<RouteExpression[], RouteExpression>(env.Pop<RouteExpression[]>(), env.Pop<RouteExpression>());
-        //}
-
-        private static void EXPRESSION(ParseContext<JsonToken> ctx)
+        private static void EXPRESSION(ParseContext<JTokenParserToken> ctx)
         {
             ctx.Sequence("object(route) OPERATION")
                .Token("object").Action((env, t) => env.Push(Route.Parse(t.Value)))
@@ -82,7 +66,7 @@ namespace PS.Data.Predicate
                }));
         }
 
-        private static void EXPRESSION_CONDITION(ParseContext<JsonToken> ctx)
+        private static void EXPRESSION_CONDITION(ParseContext<JTokenParserToken> ctx)
         {
             ctx.Sequence("and EXPRESSION_CONDITION_BODY")
                .Token("and")
@@ -111,7 +95,7 @@ namespace PS.Data.Predicate
                });
         }
 
-        private static void EXPRESSION_CONDITION_BODY(ParseContext<JsonToken> ctx)
+        private static void EXPRESSION_CONDITION_BODY(ParseContext<JTokenParserToken> ctx)
         {
             ctx.Sequence("ArrayStart EXPRESSION_LIST ArrayEnd")
                .Token("[")
@@ -119,7 +103,7 @@ namespace PS.Data.Predicate
                .Token("]");
         }
 
-        private static void EXPRESSION_LIST(ParseContext<JsonToken> ctx)
+        private static void EXPRESSION_LIST(ParseContext<JTokenParserToken> ctx)
         {
             ctx.Sequence("EXPRESSION EXPRESSION_LIST")
                .Rule(EXPRESSION).Action((env, rule) => env.Get<List<IExpression>>().Add(rule.Pop<IExpression>()))
@@ -132,10 +116,10 @@ namespace PS.Data.Predicate
                .Commit(env => env.Push(env.Pop<List<IExpression>>().ToArray()));
 
             ctx.Sequence("EMPTY")
-               .Commit(env=> env.Push(Enumerable.Empty<IExpression>().ToArray()));
+               .Commit(env => env.Push(Enumerable.Empty<IExpression>().ToArray()));
         }
 
-        private static void OPERATION(ParseContext<JsonToken> ctx)
+        private static void OPERATION(ParseContext<JTokenParserToken> ctx)
         {
             ctx.Sequence("not operator value")
                .Token("not")
@@ -160,11 +144,11 @@ namespace PS.Data.Predicate
 
         #endregion
 
-        private readonly JsonToken[] _tokens;
+        private readonly JTokenParserToken[] _tokens;
 
         #region Constructors
 
-        public JsonPredicateModelProvider(JToken jToken)
+        public JTokenParser(JToken jToken)
         {
             if (jToken == null) throw new ArgumentNullException(nameof(jToken));
             var tokenizer = new JsonTokenizer();
@@ -175,26 +159,24 @@ namespace PS.Data.Predicate
 
         #region Members
 
-        public IExpression Provide()
+        public IExpression Parse()
         {
-            var table = new TokenTable<JsonToken>()
-                .Add("[", new JsonToken(TokenType.ArrayStart))
-                .Add("]", new JsonToken(TokenType.ArrayEnd))
-                .Add("object", new JsonToken(TokenType.Object))
-                .Add("and", new JsonToken(TokenType.And))
-                .Add("or", new JsonToken(TokenType.Or))
-                .Add("not", new JsonToken(TokenType.Not))
-                .Add("operator", new JsonToken(TokenType.Operator))
-                .Add("value", new JsonToken(TokenType.Value))
-                .Add("eos", new JsonToken(TokenType.EOS));
+            var table = new TokenTable<JTokenParserToken>()
+                .Add("[", new JTokenParserToken(TokenType.ArrayStart))
+                .Add("]", new JTokenParserToken(TokenType.ArrayEnd))
+                .Add("object", new JTokenParserToken(TokenType.Object))
+                .Add("and", new JTokenParserToken(TokenType.And))
+                .Add("or", new JTokenParserToken(TokenType.Or))
+                .Add("not", new JTokenParserToken(TokenType.Not))
+                .Add("operator", new JTokenParserToken(TokenType.Operator))
+                .Add("value", new JTokenParserToken(TokenType.Value))
+                .Add("eos", new JTokenParserToken(TokenType.EOS));
 
-            var ctx = ParseContext<JsonToken>.Parse(_tokens, table);
+            var ctx = ParseContext<JTokenParserToken>.Parse(_tokens, table);
 
             ctx.Sequence("EXPRESSION_CONDITION eos")
-               .Rule(EXPRESSION_CONDITION).Action((env, rule)=> env.Push(rule.Pop<IExpression>()))
+               .Rule(EXPRESSION_CONDITION).Action((env, rule) => env.Push(rule.Pop<IExpression>()))
                .Token("eos");
-
-            var s = ctx.ToString("d");
 
             if (ctx.FailedBranch != null) throw ctx.FailedBranch.Error;
             if (ctx.SuccessBranch != null) return ctx.SuccessBranch.Environment.Get<IExpression>();

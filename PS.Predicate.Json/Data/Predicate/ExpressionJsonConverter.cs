@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PS.Data.Predicate.Logic;
 using PS.Extensions;
 
@@ -34,11 +35,11 @@ namespace PS.Data.Predicate
                 writer.WriteStartObject();
                 writer.WritePropertyName(routeSubsetExpression.Query.ToLowerInvariant());
                 serializer.Serialize(writer, routeSubsetExpression.Subset);
-                writer.WriteEndObject();
                 if (routeSubsetExpression.Operator != null)
                 {
-                    serializer.Serialize(writer, routeSubsetExpression.Operator);
+                    WriteJson(writer, routeSubsetExpression.Operator, serializer);
                 }
+                writer.WriteEndObject();
                 writer.WriteEndObject();
                 return;
             }
@@ -49,7 +50,7 @@ namespace PS.Data.Predicate
                 writer.WriteStartObject();
                 writer.WritePropertyName(routeExpression.Route.ToString().ToLowerInvariant());
                 writer.WriteStartObject();
-                serializer.Serialize(writer, routeExpression.Operator);
+                WriteJson(writer, routeExpression.Operator, serializer);
                 writer.WriteEndObject();
                 writer.WriteEndObject();
                 return;
@@ -76,20 +77,14 @@ namespace PS.Data.Predicate
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            //if (objectType == typeof())
-            //    switch (objectType)
-            //    {
-            //    }
-            serializer.Populate(reader, new RouteExpression());
-            var jToken = serializer.Deserialize<RouteExpression>(reader);
-            //reader.Value
-            return null;
+            var jToken = (JToken)serializer.Deserialize(reader);
+            var parser = new JTokenParser(jToken);
+            return parser.Parse();
         }
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(IExpression).IsAssignableFrom(objectType) ||
-                   typeof(OperatorExpression).IsAssignableFrom(objectType);
+            return typeof(IExpression).IsAssignableFrom(objectType);
         }
 
         #endregion

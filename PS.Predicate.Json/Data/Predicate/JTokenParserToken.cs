@@ -2,11 +2,11 @@ using PS.Data.Parser;
 
 namespace PS.Data.Predicate
 {
-    internal class JsonToken : IToken
+    internal class JTokenParserToken : IToken
     {
         #region Constructors
 
-        public JsonToken(TokenType type, string value = null)
+        public JTokenParserToken(TokenType type, string value = null)
         {
             Value = value;
             Type = type;
@@ -36,7 +36,7 @@ namespace PS.Data.Predicate
 
         public bool Equals(IToken other)
         {
-            var token = other as JsonToken;
+            var token = other as JTokenParserToken;
             return token?.Type == Type;
         }
 
