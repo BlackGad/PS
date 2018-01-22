@@ -40,17 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Parser\AssertResult.cs" />
-    <Compile Include="Data\Parser\AssertResultBranch.cs" />
-    <Compile Include="Data\Parser\AssertResultEmpty.cs" />
-    <Compile Include="Data\Parser\AssertResultToken.cs" />
-    <Compile Include="Data\Parser\IParseBranch.cs" />
-    <Compile Include="Data\Parser\ParseBranch.cs" />
-    <Compile Include="Data\Parser\ParseContext.cs" />
-    <Compile Include="Data\Parser\ParseEnvironment.cs" />
-    <Compile Include="Data\Parser\ParserException.cs" />
-    <Compile Include="Data\Parser\IToken.cs" />
-    <Compile Include="Data\Parser\TokenTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +47,9 @@
       <Project>{d26839ec-992d-4ba3-95a0-354cfabb6e74}</Project>
       <Name>PS.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\Parser\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

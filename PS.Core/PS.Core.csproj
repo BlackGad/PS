@@ -50,6 +50,17 @@
     <Compile Include="Data\Logic\InvertedLogicalExpression.cs" />
     <Compile Include="Data\Logic\LogicalExpression.cs" />
     <Compile Include="Data\Logic\LogicalOperator.cs" />
+    <Compile Include="Data\Parser\AssertResult.cs" />
+    <Compile Include="Data\Parser\AssertResultBranch.cs" />
+    <Compile Include="Data\Parser\AssertResultEmpty.cs" />
+    <Compile Include="Data\Parser\AssertResultToken.cs" />
+    <Compile Include="Data\Parser\IParseBranch.cs" />
+    <Compile Include="Data\Parser\IToken.cs" />
+    <Compile Include="Data\Parser\ParseBranch.cs" />
+    <Compile Include="Data\Parser\ParseContext.cs" />
+    <Compile Include="Data\Parser\ParseEnvironment.cs" />
+    <Compile Include="Data\Parser\ParserException.cs" />
+    <Compile Include="Data\Parser\TokenTable.cs" />
     <Compile Include="Extensions\PathExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Linq\Expressions\Extensions\ExpressionExtensions.cs" />
