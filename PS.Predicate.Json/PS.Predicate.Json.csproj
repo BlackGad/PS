@@ -63,10 +63,6 @@
       <Project>{2b3db529-cf2c-4397-b5cd-2ff71587f74f}</Project>
       <Name>PS.Predicate</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PS.Parser\PS.Parser.csproj">
-      <Project>{be889116-e82f-4890-9da7-c1b71f2e7677}</Project>
-      <Name>PS.Parser</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
