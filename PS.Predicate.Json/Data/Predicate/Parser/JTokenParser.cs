@@ -8,7 +8,7 @@ using PS.Data.Predicate.Logic;
 using PS.Navigation;
 using LogicalExpression = PS.Data.Predicate.Logic.LogicalExpression;
 
-namespace PS.Data.Predicate
+namespace PS.Data.Predicate.Parser
 {
     /// <summary>
     ///     Grammar:

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PS.Data.Predicate.Logic;
+using PS.Data.Predicate.Parser;
 using PS.Extensions;
 
 namespace PS.Data.Predicate

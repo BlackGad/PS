@@ -1,4 +1,4 @@
-namespace PS.Data.Predicate
+namespace PS.Data.Predicate.Parser
 {
     internal enum TokenType
     {

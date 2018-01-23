@@ -1,6 +1,6 @@
 using PS.Data.Parser;
 
-namespace PS.Data.Predicate
+namespace PS.Data.Predicate.Parser
 {
     internal class JTokenParserToken : IToken
     {

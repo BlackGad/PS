@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace PS.Data.Predicate
+namespace PS.Data.Predicate.Parser
 {
     internal class JsonTokenizer
     {
