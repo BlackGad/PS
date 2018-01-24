@@ -55,6 +55,7 @@
     <Compile Include="Data\Predicate\Parser\JTokenParser.cs" />
     <Compile Include="Data\Predicate\Parser\JsonTokenizer.cs" />
     <Compile Include="Data\Predicate\Parser\JTokenParserToken.cs" />
+    <Compile Include="Nuget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\Predicate\Parser\TokenType.cs" />
   </ItemGroup>
