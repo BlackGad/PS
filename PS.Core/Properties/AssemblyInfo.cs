@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Basic PS patterns which has no additional references")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("Public Software")]
-[assembly: AssemblyCopyright("Copyright © Vladimir Shkolka, 2017.")]
+[assembly: AssemblyCopyright("Copyright © Vladimir Shkolka, 2018.")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyCompany("Vladimir Shkolka")]
 

@@ -5,14 +5,13 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("PS.Predicate")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("PS Predicate")]
+[assembly: AssemblyDescription("Component for dynamic lambda predicate building")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PS.Predicate")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyProduct("Public Software")]
+[assembly: AssemblyCopyright("Copyright © Vladimir Shkolka, 2018.")]
 [assembly: AssemblyCulture("")]
+[assembly: AssemblyCompany("Vladimir Shkolka")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
