@@ -8,10 +8,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("PS Predicate Json converter")]
 [assembly: AssemblyDescription("Tools for proper dynamic lambda predicate JSON serialization")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Vladimir Shkolka")]
 [assembly: AssemblyProduct("Public Software")]
 [assembly: AssemblyCopyright("Copyright © Vladimir Shkolka, 2018.")]
-[assembly: AssemblyCulture("Vladimir Shkolka")]
+[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
