@@ -17,7 +17,9 @@ namespace PS.Predicate.Json.Tests
     {
         #region Test Parser
 
+#if DEBUG
         [Test]
+#endif
         public void Parser()
         {
             var scheme = Scheme.Create<License>();

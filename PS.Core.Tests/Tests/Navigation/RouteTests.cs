@@ -209,9 +209,9 @@ namespace PS.Tests.Navigation
             var wildFreeSplit = Route.Parse("1.2.3.4.5.6.7.8.9")
                                      .RecursiveSplit(Route.Parse("2.3"));
             Assert.IsNotNull(wildFreeSplit);
-            Assert.AreEqual(Routes.Empty, wildFreeSplit.Prefix);
+            Assert.AreEqual(Route.Parse("1.2.3"), wildFreeSplit.Prefix);
             Assert.AreEqual(Routes.Empty, wildFreeSplit.Recursive);
-            Assert.AreEqual(Route.Parse("2.3"), wildFreeSplit.Postfix);
+            Assert.AreEqual(Route.Parse("4.5.6.7.8.9"), wildFreeSplit.Postfix);
         }
 
         [Test]

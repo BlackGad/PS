@@ -53,22 +53,24 @@ namespace PS.Navigation.Extensions
             if (modeIndex > 1) return null;
             var maskTokenSequence = mask.Sequences[modeIndex];
 
-            var match = Regex.Match(source.Sequences[modeIndex].RegexInput, maskTokenSequence.RegexPattern);
+            var sourceRegexInput = source.Sequences[modeIndex].RegexInput;
+            var match = Regex.Match(sourceRegexInput, maskTokenSequence.RegexPattern);
             if (!match.Success) return null;
-            if (!mask.IsWild) return new RouteRecursiveSplit(Routes.Empty, Routes.Empty, source);
 
             // ReSharper disable PossibleInvalidOperationException
-            var recursiveStart = maskTokenSequence.RecursiveStart.Value;
-            var postfixStart = maskTokenSequence.RecursiveEnd.Value;
+            var recursiveStart = maskTokenSequence.RecursiveStart ?? maskTokenSequence.Count;
+            var postfixStart = maskTokenSequence.RecursiveEnd ?? maskTokenSequence.Count;
             // ReSharper restore PossibleInvalidOperationException
+
+            var wholeMatch = match.Groups.Enumerate<Group>().First();
 
             var capturedGroups = match.Groups.Enumerate<Group>().Skip(1).ToList();
 
-            var prefixTokens = string.Join("/", capturedGroups.Take(recursiveStart).Select(g => g.Value));
+            var prefixTokens = sourceRegexInput.Substring(0, wholeMatch.Index) + string.Join("/", capturedGroups.Take(recursiveStart).Select(g => g.Value));
             var recursiveTokens = string.Join("/", capturedGroups.Skip(recursiveStart).Take(postfixStart - recursiveStart).Select(g => g.Value));
 
             var sourceRecursiveStart = prefixTokens.Occurrences('/') + 1;
-            var sourcePostfixStart = sourceRecursiveStart + recursiveTokens.Occurrences('/') + 1;
+            var sourcePostfixStart = sourceRecursiveStart + (string.IsNullOrEmpty(recursiveTokens) ? 0 : recursiveTokens.Occurrences('/') + 1);
 
             var prefix = source.Sub(0, sourceRecursiveStart);
             var recursive = source.Sub(sourceRecursiveStart, sourcePostfixStart - sourceRecursiveStart);
