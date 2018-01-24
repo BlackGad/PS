@@ -33,7 +33,7 @@ namespace PS.Predicate.Json.Tests
             scheme.Routes.Subset(src => src.Claims)
                   .Route(src => src.Id)
                   .Route(src => src.Type)
-                  .Route(src => src.Name);
+                  .Route(src => src.Value);
 
             //Parser
             var json = File.ReadAllText(@"D:\GitHub\PS\PS.Predicate.Json.Tests\TextFile1.txt");
@@ -60,10 +60,10 @@ namespace PS.Predicate.Json.Tests
                 }
             }
 
-            var serialized = JsonConvert.SerializeObject(expression, jsonSerializerSettings);
-            var deserialized = JsonConvert.DeserializeObject<IExpression>(serialized, jsonSerializerSettings);
+            //var serialized = JsonConvert.SerializeObject(expression, jsonSerializerSettings);
+            //var deserialized = JsonConvert.DeserializeObject<IExpression>(serialized, jsonSerializerSettings);
 
-            var licenses = ModelBuilder.CreateModel();
+            var licenses = ModelBuilder.CreateModel().AsQueryable();
             var queryLicenses = licenses.Where(scheme.Build(expression)).ToList();
         }
 

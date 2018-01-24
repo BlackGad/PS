@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using PS.Data.Predicate.ExpressionBuilder;
 using PS.Data.Predicate.Logic;
 
@@ -52,7 +53,7 @@ namespace PS.Data.Predicate
             get { return _routes; }
         }
 
-        public Func<TClass, bool> Build(IExpression expression)
+        public Expression<Func<TClass, bool>> Build(IExpression expression)
         {
             return PredicateExpressionBuilder.Build<TClass>(this, expression);
         }

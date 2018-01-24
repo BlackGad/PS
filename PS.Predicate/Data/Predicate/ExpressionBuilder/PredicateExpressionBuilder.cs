@@ -14,10 +14,10 @@ namespace PS.Data.Predicate.ExpressionBuilder
     {
         #region Static members
 
-        internal static Func<TClass, bool> Build<TClass>(IPredicateSchemeProvider scheme, IExpression expression)
+        internal static Expression<Func<TClass, bool>> Build<TClass>(IPredicateSchemeProvider scheme, IExpression expression)
         {
             var lambda = Build(scheme, typeof(TClass), scheme.Routes, expression);
-            return (Func<TClass, bool>)lambda.Compile();
+            return (Expression<Func<TClass, bool>>)lambda;
         }
 
         private static LambdaExpression Build(IPredicateSchemeProvider scheme,

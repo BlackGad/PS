@@ -1,1 +1,13 @@
-﻿{ "id": { "equal": "dcec5d8f-6c10-4c0c-9e1b-1c9abc2f268c" }}
+﻿[
+{ 
+   "claims" : { "any" :
+   [
+      { "type" : {"equal" : "external_provider_user_id"}},
+      { "or" : [
+              { "value" : {"equal" : "3de47c9d-92c2-448f-9387-17042fc6cc3b"}},
+              { "value" : {"equal" : "b2d100dc-f52a-49e1-abf9-5154eb27e49b"}},
+      ]}
+
+   ]}
+}
+]

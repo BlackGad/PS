@@ -27,25 +27,25 @@ namespace PS.Predicate.Tests.TestReferences.ExpressionBuilderTests
                         {
                             Id = new Guid("373474BF-8242-4BE8-88FA-53FFDC3BA20D"),
                             Type = "claim_type_1",
-                            Name = "Claim Type 1 Value 1"
+                            Value = "Claim Type 1 Value 1"
                         },
                         new Claim
                         {
                             Id = Guid.NewGuid(),
                             Type = "claim_type_1",
-                            Name = "Claim Type 1 Value 1"
+                            Value = "Claim Type 1 Value 1"
                         },
                         new Claim
                         {
                             Id = Guid.NewGuid(),
                             Type = "claim_type_2",
-                            Name = "Claim Type 2 Value 1"
+                            Value = "Claim Type 2 Value 1"
                         },
                         new Claim
                         {
                             Id = Guid.NewGuid(),
                             Type = "claim_type_1",
-                            Name = "Claim Type 2 Value 2"
+                            Value = "Claim Type 2 Value 2"
                         }
                     }
                 },
@@ -59,7 +59,7 @@ namespace PS.Predicate.Tests.TestReferences.ExpressionBuilderTests
                         {
                             Id = Guid.NewGuid(),
                             Type = "claim_type_3",
-                            Name = "Claim Type 3 Value 1"
+                            Value = "Claim Type 3 Value 1"
                         }
                     }
                 }

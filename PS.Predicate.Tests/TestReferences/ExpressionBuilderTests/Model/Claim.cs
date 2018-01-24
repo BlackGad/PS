@@ -7,7 +7,7 @@ namespace PS.Predicate.Tests.TestReferences.ExpressionBuilderTests.Model
         #region Properties
 
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Value { get; set; }
         public string Type { get; set; }
 
         #endregion
