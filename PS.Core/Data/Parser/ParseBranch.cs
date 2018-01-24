@@ -67,10 +67,6 @@ namespace PS.Data.Parser
             };
 
             Asserts.Add(assert);
-            var body = factory.Method.ToString();
-            body = body.Substring(5, body.IndexOf('(') - 5);
-            _stack111.Push(body);
-            Console.WriteLine(_stack111.Aggregate(string.Empty, (agg, b) => b + " -> " + agg));
             try
             {
                 var localContext = Context.Branch(currentOffset);
@@ -85,9 +81,6 @@ namespace PS.Data.Parser
             {
                 assert.Error = new ParserException(null, BranchName, e);
             }
-            _stack111.Pop();
-            Console.WriteLine("<-" + (assert.Error == null ? "Success" : "Error"));
-            //Console.WriteLine(_stack111.Aggregate(string.Empty, (agg, b) => b + " -> " + agg));
 
             return new ParseRuleBranch<TToken>(this, assert.Branch.Environment, assert.Error != null);
         }
@@ -161,8 +154,6 @@ namespace PS.Data.Parser
         }
 
         #endregion
-
-        private static readonly Stack<string> _stack111 = new Stack<string>();
     }
 
     public class ParseRuleBranch<TToken> : IParseBranch<TToken> where TToken : IToken
