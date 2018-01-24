@@ -25,17 +25,19 @@ namespace PS.Data.Logic.Extensions
             var invertedExpression = expression as IInvertedLogicalExpression;
             if (invertedExpression != null) expression = Factorize(invertedExpression.Expression, factorizeParams, !inverted);
 
-            var compositionExpression = expression as ILogicalExpression;
-            if (compositionExpression != null)
+            var logicalExpression = expression as ILogicalExpression;
+            if (logicalExpression != null)
             {
-                var subExpressions = compositionExpression.Expressions ?? Enumerable.Empty<object>();
+                var subExpressions = logicalExpression.Expressions.Enumerate<object>();
                 foreach (var subExpression in subExpressions)
                 {
                     var factorizedSubExpression = Factorize(subExpression, factorizeParams, inverted);
-                    switch (compositionExpression.Operator)
+                    switch (logicalExpression.Operator)
                     {
                         case LogicalOperator.And:
-                            MultiplyFactorizedExpression(rootOrExpression, factorizedSubExpression.Expressions.Enumerate<object>().ToArray());
+                            MultiplyFactorizedExpressions(rootOrExpression,
+                                                          factorizedSubExpression,
+                                                          factorizeParams);
                             break;
                         case LogicalOperator.Or:
                             foreach (var sub in factorizedSubExpression.Expressions)
@@ -55,32 +57,44 @@ namespace PS.Data.Logic.Extensions
                 rootOrExpression.AddExpression(rootAndExpression);
             }
 
-            if (compositionExpression == null && expression != null)
+            if (logicalExpression == null && expression != null)
                 rootOrExpression.Expressions.Enumerate().OfType<ILogicalExpression>().First().AddExpression(expression);
 
             return rootOrExpression;
         }
 
-        private static void MultiplyFactorizedExpression(ILogicalExpression targetLogical, object[] source)
+        private static void MultiplyFactorizedExpressions(ILogicalExpression orExpression,
+                                                          ILogicalExpression factorizedExpression,
+                                                          FactorizeParams factorizeParams)
         {
-            if (targetLogical.Expressions.Enumerate<object>().Any())
+            if (orExpression.Expressions.Enumerate<object>().Any())
             {
-                foreach (var targetSubGroup in targetLogical.Expressions.OfType<ILogicalExpression>())
+                var orExpressions = orExpression.Expressions.OfType<ILogicalExpression>().ToList();
+                foreach (var oldAndGroupExpression in orExpressions)
                 {
-                    foreach (var sourceSubGroup in source.OfType<ILogicalExpression>())
+                    orExpression.RemoveExpression(oldAndGroupExpression);
+                    foreach (var multipliedOrExpression in factorizedExpression.Expressions.OfType<ILogicalExpression>()) //or
                     {
-                        foreach (var expression in sourceSubGroup.Expressions)
+                        var newAndGroupExpression = factorizeParams.CompositionFactory(LogicalOperator.And);
+                        foreach (var expression in oldAndGroupExpression.Expressions)
                         {
-                            targetSubGroup.AddExpression(expression);
+                            newAndGroupExpression.AddExpression(expression);
                         }
+
+                        foreach (var expression in multipliedOrExpression.Expressions) //and
+                        {
+                            newAndGroupExpression.AddExpression(expression);
+                        }
+
+                        orExpression.AddExpression(newAndGroupExpression);
                     }
                 }
             }
             else
             {
-                foreach (var expression in source)
+                foreach (var expression in factorizedExpression.Expressions)
                 {
-                    targetLogical.AddExpression(expression);
+                    orExpression.AddExpression(expression);
                 }
             }
         }
