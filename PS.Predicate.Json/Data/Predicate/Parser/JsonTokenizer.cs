@@ -8,35 +8,35 @@ namespace PS.Data.Predicate.Parser
 {
     internal class JsonTokenizer
     {
+        private List<JTokenParserToken> _tokens;
+
         #region Members
 
         public JTokenParserToken[] Tokenize(JToken jToken)
         {
             if (jToken == null) throw new ArgumentNullException(nameof(jToken));
-            return TokenizeJToken(jToken).Union(new[] { new JTokenParserToken(TokenType.EOS) }).ToArray();
+            _tokens = new List<JTokenParserToken>();
+            TokenizeJToken(jToken);
+            _tokens.Add(new JTokenParserToken(TokenType.EOS));
+            return _tokens.ToArray();
         }
 
-        private IEnumerable<JTokenParserToken> TokenizeJArray(JArray array)
+        private void TokenizeJArray(JArray array)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
 
-            var result = new List<JTokenParserToken>
-            {
-                new JTokenParserToken(TokenType.ArrayStart)
-            };
+            _tokens.Add(new JTokenParserToken(TokenType.ArrayStart));
 
             foreach (var item in array)
             {
-                result.AddRange(TokenizeJToken(item));
+                TokenizeJToken(item);
             }
-            result.Add(new JTokenParserToken(TokenType.ArrayEnd));
 
-            return result;
+            _tokens.Add(new JTokenParserToken(TokenType.ArrayEnd));
         }
 
-        private IEnumerable<JTokenParserToken> TokenizeJObject(JObject jObject)
+        private void TokenizeJObject(JObject jObject)
         {
-            var result = new List<JTokenParserToken>();
             var properties = jObject.Properties().ToList();
             foreach (var property in properties)
             {
@@ -44,45 +44,59 @@ namespace PS.Data.Predicate.Parser
 
                 if (string.Equals(property.Name, "not", StringComparison.InvariantCultureIgnoreCase))
                     jsonToken = new JTokenParserToken(TokenType.Not);
-                else if (properties.Count > 1 || property.Value is JValue)
-                    jsonToken = new JTokenParserToken(TokenType.Operator, property.Name);
                 else if (string.Equals(property.Name, "and", StringComparison.InvariantCultureIgnoreCase))
                     jsonToken = new JTokenParserToken(TokenType.And);
                 else if (string.Equals(property.Name, "or", StringComparison.InvariantCultureIgnoreCase))
                     jsonToken = new JTokenParserToken(TokenType.Or);
+                else if (properties.Count > 1 || property.Value is JValue)
+                    jsonToken = new JTokenParserToken(TokenType.Operator, property.Name);
                 else if (properties.Count == 1 && property.Value is JArray)
                     jsonToken = new JTokenParserToken(TokenType.Operator, property.Name);
-                else jsonToken = new JTokenParserToken(TokenType.Object, property.Name);
+                else
+                {
+                    jsonToken = _tokens.LastOrDefault()?.Type == TokenType.Object
+                        ? new JTokenParserToken(TokenType.Operator, property.Name)
+                        : new JTokenParserToken(TokenType.Object, property.Name);
+                }
 
-                result.Add(jsonToken);
-                result.AddRange(TokenizeJToken(property.Value));
+                _tokens.Add(jsonToken);
+
+                TokenizeJToken(property.Value);
             }
-            return result;
         }
 
-        private IEnumerable<JTokenParserToken> TokenizeJToken(object obj)
+        private void TokenizeJToken(object obj)
         {
             var token = obj as JToken;
             if (token == null) throw new InvalidOperationException();
 
             var jArray = obj as JArray;
-            if (jArray != null) return TokenizeJArray(jArray);
+            if (jArray != null)
+            {
+                TokenizeJArray(jArray);
+                return;
+            }
 
             var jObject = obj as JObject;
-            if (jObject != null) return TokenizeJObject(jObject);
+            if (jObject != null)
+            {
+                TokenizeJObject(jObject);
+                return;
+            }
 
             var jValue = obj as JValue;
-            if (jValue != null) return TokenizeJValue(jValue);
+            if (jValue != null)
+            {
+                TokenizeJValue(jValue);
+                return;
+            }
 
             throw new NotSupportedException();
         }
 
-        private IEnumerable<JTokenParserToken> TokenizeJValue(JValue jObject)
+        private void TokenizeJValue(JValue jObject)
         {
-            return new List<JTokenParserToken>
-            {
-                new JTokenParserToken(TokenType.Value, jObject.ToString(Formatting.None).Trim('\"', '\''))
-            };
+            _tokens.Add(new JTokenParserToken(TokenType.Value, jObject.ToString(Formatting.None).Trim('\"', '\'')));
         }
 
         #endregion
