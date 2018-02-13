@@ -23,8 +23,10 @@ namespace PS.Data.Predicate.Logic
             Operator = op;
         }
 
-        private LogicalExpression()
+        public LogicalExpression()
         {
+            Operator = LogicalOperator.And;
+            Expressions = new IExpression[] { };
         }
 
         #endregion
