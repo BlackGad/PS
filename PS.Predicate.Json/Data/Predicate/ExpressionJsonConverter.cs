@@ -21,7 +21,7 @@ namespace PS.Data.Predicate
                 writer.WriteStartArray();
                 foreach (var expression in logicalExpression.Expressions.Enumerate())
                 {
-                    serializer.Serialize(writer, expression);
+                    WriteJson(writer, expression, serializer);
                 }
                 writer.WriteEndArray();
                 writer.WriteEndObject();
@@ -35,7 +35,7 @@ namespace PS.Data.Predicate
                 writer.WritePropertyName(routeSubsetExpression.Route.ToString().ToLowerInvariant());
                 writer.WriteStartObject();
                 writer.WritePropertyName(routeSubsetExpression.Query.ToLowerInvariant());
-                serializer.Serialize(writer, routeSubsetExpression.Subset);
+                WriteJson(writer, routeSubsetExpression.Subset, serializer);
                 if (routeSubsetExpression.Operator != null)
                 {
                     WriteJson(writer, routeSubsetExpression.Operator, serializer);

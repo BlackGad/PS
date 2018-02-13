@@ -17,23 +17,28 @@ namespace PS.Data.Predicate.Logic
     {
         #region Constructors
 
-        public LogicalExpression(LogicalOperator op, IEnumerable<IExpression> expressions)
+        public LogicalExpression(LogicalOperator op, IEnumerable<IExpression> expressions) : this()
         {
-            Expressions = expressions.Enumerate().ToArray();
+            Expressions.AddRange(expressions.Enumerate());
             Operator = op;
+        }
+
+        public LogicalExpression(LogicalOperator op, params IExpression[] expressions) :
+            this(op, expressions.Enumerate())
+        {
         }
 
         public LogicalExpression()
         {
             Operator = LogicalOperator.And;
-            Expressions = new IExpression[] { };
+            Expressions = new List<IExpression>();
         }
 
         #endregion
 
         #region Properties
 
-        public IExpression[] Expressions { get; private set; }
+        public List<IExpression> Expressions { get; private set; }
 
         #endregion
 
@@ -74,7 +79,7 @@ namespace PS.Data.Predicate.Logic
             }
 
             reader.Skip();
-            Expressions = result.ToArray();
+            Expressions = result.ToList();
         }
 
         public virtual void WriteXml(XmlWriter writer)
